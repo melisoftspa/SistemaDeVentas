@@ -35,6 +35,7 @@ namespace SistemaDeVentas
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
+            lblVersion.Text = $"Versión: {Application.ProductVersion}";
             if (!ConDB.OpenDB)
             {
                 MessageBox.Show("No se pudo conectar a la base de datos, haga click en 'solucionar problemas de coneccion' y siga los pasos", "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);

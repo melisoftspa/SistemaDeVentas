@@ -2,6 +2,7 @@
 using System.Drawing.Printing;
 using IronBarCode;
 using LibPrintTicket;
+using SistemaDeVentas.Models;
 
 namespace SistemaDeVentas
 {
@@ -131,13 +132,15 @@ namespace SistemaDeVentas
 
         private void filterTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            filter_word = filterTextBox.Text.Trim();
-            InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word, isSales: true);
-            setProductsGridFormat();
+            
         }
 
         private void setProductsGridFormat()
         {
+            //InventoryDataGrid.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.Fill);
+            InventoryDataGrid.AutoResizeColumns();
+            InventoryDataGrid.AllowUserToOrderColumns = true;
+            InventoryDataGrid.AllowUserToResizeColumns = true;
             InventoryDataGrid.Columns["name"].HeaderText = "Nombre del Producto";
             InventoryDataGrid.Columns["sale_price"].HeaderText = "Precio de Venta";
             InventoryDataGrid.Columns["amount"].HeaderText = "Stock Actual";
@@ -146,10 +149,7 @@ namespace SistemaDeVentas
             InventoryDataGrid.Columns["sale_price"].DefaultCellStyle.Format = "C";
             InventoryDataGrid.Columns["sale_price"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
             InventoryDataGrid.Columns["id"].Visible = false;
-            InventoryDataGrid.Columns["name"].Width = 300;
             InventoryDataGrid.Columns["amount"].Visible = true;
-            InventoryDataGrid.Columns["sale_price"].Width = 60;
-            InventoryDataGrid.Columns["amount"].Width = 60;
             InventoryDataGrid.Columns["minimum"].Visible = false;
             InventoryDataGrid.Columns["photo"].Visible = false;
             InventoryDataGrid.Columns["stock"].Visible = false;
@@ -159,10 +159,26 @@ namespace SistemaDeVentas
             InventoryDataGrid.Columns["state"].Visible = false;
             InventoryDataGrid.Columns["exenta"].Visible = false;
             InventoryDataGrid.Columns["id_tax"].Visible = false;
+            InventoryDataGrid.Columns["tax"].Visible = false;
             InventoryDataGrid.Columns["id_category"].Visible = false;
             InventoryDataGrid.Columns["isPack"].Visible = false;
             InventoryDataGrid.Columns["id_pack"].Visible = false;
             InventoryDataGrid.Columns["id_subcategory"].Visible = false;
+            // Now that DataGridView has calculated it's Widths; we can now store each column Width values.
+            for (int i = 0; i <= InventoryDataGrid.Columns.Count - 1; i++)
+            {
+                // Store Auto Sized Widths:
+                int colw = InventoryDataGrid.Columns[i].Width;
+                // Remove AutoSizing:
+                InventoryDataGrid.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                // Set Width to calculated AutoSize value:
+                InventoryDataGrid.Columns[i].Width = colw;
+            }
+            InventoryDataGrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+            InventoryDataGrid.Columns["sale_price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            InventoryDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            InventoryDataGrid.Columns["expiration"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            InventoryDataGrid.Columns["bar_code"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         private void setDetailsGridFormat()
@@ -176,10 +192,10 @@ namespace SistemaDeVentas
             detailsDataTable.Columns.Add("tax");
             detailsDataTable.Columns.Add("exenta");
             DetailDataGrid.Columns["id"].Visible = false;
-            DetailDataGrid.Columns["name"].Width = 300;
-            DetailDataGrid.Columns["price"].Width = 70;
-            DetailDataGrid.Columns["amount"].Width = 55;
-            DetailDataGrid.Columns["total"].Width = 65;
+            DetailDataGrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            DetailDataGrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DetailDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DetailDataGrid.Columns["total"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             DetailDataGrid.Columns["tax"].Visible = false;
             DetailDataGrid.Columns["exenta"].Visible = false;
             DetailDataGrid.Columns["name"].HeaderText = "Nombre del Producto";
@@ -190,6 +206,16 @@ namespace SistemaDeVentas
             DetailDataGrid.Columns["total"].DefaultCellStyle.Format = "C";
             DetailDataGrid.Columns["price"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
             DetailDataGrid.Columns["total"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
+            // Now that DataGridView has calculated it's Widths; we can now store each column Width values.
+            for (int i = 0; i <= DetailDataGrid.Columns.Count - 1; i++)
+            {
+                // Store Auto Sized Widths:
+                int colw = DetailDataGrid.Columns[i].Width;
+                // Remove AutoSizing:
+                DetailDataGrid.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                // Set Width to calculated AutoSize value:
+                DetailDataGrid.Columns[i].Width = colw;
+            }
         }
 
         private void InventoryDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -1271,5 +1297,29 @@ namespace SistemaDeVentas
             timer_label.Text = DateTime.Now.ToString();
         }
 
+        private void InventoryDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void filterTextBox_TextChanged(object sender, EventArgs e)
+        {
+            filter_word = filterTextBox.Text.Trim();
+            if (string.IsNullOrEmpty(filter_word)) {
+                InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word, isSales: true);
+            } else {
+                //BindingSource bs = new BindingSource();
+                var datalist = ((DataTable)InventoryDataGrid.DataSource).AsEnumerable().Select(row => new Product { 
+                    Name = row.Field<string>("name"), BarCode = row.Field<string>("bar_code"), Amount = row.Field<int>("amount") 
+                }).ToList();
+                var resultado = datalist.Where(p => p.Name.Contains(filter_word) || p.BarCode.Contains(filter_word) || p.Amount.ToString().Contains(filter_word) );
+                //bs.Filter = InventoryDataGrid.Columns[5].HeaderText.ToString() + " LIKE '%" + txtbxSearch.Text + "%'";
+                InventoryDataGrid.DataSource = resultado;
+                //InventoryDataGrid.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
+                //(InventoryDataGrid.DataSource as DataTable).DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
+
+            }
+            setProductsGridFormat();
+        }
     }
 }

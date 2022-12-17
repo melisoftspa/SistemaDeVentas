@@ -49,22 +49,30 @@ namespace SistemaDeVentas
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            InventoryButton.Enabled = true;
+            List<string> listForm = new List<string>() {
+                "DetailsForm", "Historic", "initBDForm", "InventoryForm",
+                "InvoiceForm", "LoginForm", "MainForm", "PurchaseForm",
+                "SalesForm", "StadisticsForm", "UserForm"
+            };
+            InventoryButton.Enabled = false;
             stadisticsButton.Enabled = false;
             PurchasesButton.Enabled = false;
             newUserToolStripMenuItem.Enabled = false;
             historicalButton.Enabled = false;
             facturaciónToolStripMenuItem.Enabled = false;
             detailsOutletToolStripMenuItem.Enabled = false;
-            if (ConDB.userRole == 1 || ConDB.userRole == 2)
+
+            var formAccess = listForm.Intersect(ConDB.roles.Select(i => i.View));
+            foreach(var form in formAccess)
             {
-                stadisticsButton.Enabled = true;
-                InventoryButton.Enabled = true;
-                PurchasesButton.Enabled = true;
-                newUserToolStripMenuItem.Enabled = true;
-                historicalButton.Enabled = true;
-                facturaciónToolStripMenuItem.Enabled = true;
-                detailsOutletToolStripMenuItem.Enabled = true;
+                switch(form) {
+                    case "InventoryForm": InventoryButton.Enabled = true; break;
+                    case "StadisticsForm": stadisticsButton.Enabled = true; break;
+                    case "PurchaseForm": PurchasesButton.Enabled = true; break;
+                    case "UserForm": newUserToolStripMenuItem.Enabled = true; detailsOutletToolStripMenuItem.Enabled = true; facturaciónToolStripMenuItem.Enabled = true; break;
+                    case "Historic": historicalButton.Enabled = true; break;
+                    default: break;
+                }
             }
         }
 

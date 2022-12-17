@@ -18,19 +18,14 @@ namespace SistemaDeVentas
 
         private DataTable detailsDataTable = new DataTable();
 
-
         public InventoryForm()
         {
             InitializeComponent();
-            clean();
         }
 
         private void filterTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            filter_word = ConDB.validString(filterTextBox.Text);
-            filterTextBox.Text = filter_word;
-            InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word, isSales: false, isInventory: true);
-            formatDataGrid();
+
         }
 
         private void loadListCBIVA()
@@ -53,27 +48,25 @@ namespace SistemaDeVentas
         private void formatDataGrid()
         {
             InventoryDataGrid.Columns["name"].HeaderText = "Nombre del Producto";
-            InventoryDataGrid.Columns["amount"].HeaderText = "Cantidad";
+            InventoryDataGrid.Columns["amount"].HeaderText = "Stock actual";
             InventoryDataGrid.Columns["price"].HeaderText = "Precio de Compra";
+            InventoryDataGrid.Columns["sale_price"].Visible = false;
             if (ConDB.userRole == 1 || ConDB.userRole == 2)
             {
+                InventoryDataGrid.Columns["sale_price"].Visible = true;
                 InventoryDataGrid.Columns["sale_price"].HeaderText = "Precio de Venta";
-                InventoryDataGrid.Columns["sale_price"].Width = 60;
                 InventoryDataGrid.Columns["sale_price"].DefaultCellStyle.Format = "C";
                 InventoryDataGrid.Columns["sale_price"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
-            }
-            else
-            {
-                InventoryDataGrid.Columns["sale_price"].Visible = false;
+                InventoryDataGrid.Columns["sale_price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
             InventoryDataGrid.Columns["minimum"].HeaderText = "Stock Minimo";
             InventoryDataGrid.Columns["bar_code"].HeaderText = "Codigo de Barras";
             InventoryDataGrid.Columns["expiration"].HeaderText = "Fecha Vencimiento";
             InventoryDataGrid.Columns["id"].Visible = false;
-            InventoryDataGrid.Columns["name"].Width = 300;
-            InventoryDataGrid.Columns["amount"].Width = 60;
-            InventoryDataGrid.Columns["minimum"].Width = 60;
-            InventoryDataGrid.Columns["price"].Width = 60;
+            InventoryDataGrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            InventoryDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            InventoryDataGrid.Columns["minimum"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            InventoryDataGrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             InventoryDataGrid.Columns["price"].DefaultCellStyle.Format = "C";
             InventoryDataGrid.Columns["price"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
             InventoryDataGrid.Columns["bar_code"].Visible = false;
@@ -89,7 +82,18 @@ namespace SistemaDeVentas
             InventoryDataGrid.Columns["isPack"].Visible = false;
             InventoryDataGrid.Columns["id_pack"].Visible = false;
             InventoryDataGrid.Columns["id_subcategory"].Visible = false;
-            InventoryDataGrid.Refresh();
+            InventoryDataGrid.Refresh();            
+
+            // Now that DataGridView has calculated it's Widths; we can now store each column Width values.
+            for (int i = 0; i <= InventoryDataGrid.Columns.Count - 1; i++)
+            {
+                // Store Auto Sized Widths:
+                int colw = InventoryDataGrid.Columns[i].Width;
+                // Remove AutoSizing:
+                InventoryDataGrid.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                // Set Width to calculated AutoSize value:
+                InventoryDataGrid.Columns[i].Width = colw;
+            }
         }
 
         private void setDetailsGridFormat()
@@ -103,14 +107,25 @@ namespace SistemaDeVentas
             DetailsPackDatagrid.Columns["id"].Visible = false;
             DetailsPackDatagrid.Columns["barcode"].Visible = false;
             DetailsPackDatagrid.Columns["price"].Visible = false;
-            DetailsPackDatagrid.Columns["name"].Width = 400;
-            DetailsPackDatagrid.Columns["price"].Width = 70;
-            DetailsPackDatagrid.Columns["amount"].Width = 70;
+            DetailsPackDatagrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            DetailsPackDatagrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            DetailsPackDatagrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             DetailsPackDatagrid.Columns["name"].HeaderText = "Nombre del Producto";
             DetailsPackDatagrid.Columns["price"].HeaderText = "Precio Unidad";
             DetailsPackDatagrid.Columns["amount"].HeaderText = "Cantidad";
             DetailsPackDatagrid.Columns["price"].DefaultCellStyle.Format = "C";
             DetailsPackDatagrid.Columns["price"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
+
+            // Now that DataGridView has calculated it's Widths; we can now store each column Width values.
+            for (int i = 0; i <= DetailsPackDatagrid.Columns.Count - 1; i++)
+            {
+                // Store Auto Sized Widths:
+                int colw = DetailsPackDatagrid.Columns[i].Width;
+                // Remove AutoSizing:
+                DetailsPackDatagrid.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                // Set Width to calculated AutoSize value:
+                DetailsPackDatagrid.Columns[i].Width = colw;
+            }
         }
 
         private void InventoryDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -195,11 +210,11 @@ namespace SistemaDeVentas
             formatDataGrid();
             loadListCBIVA();
             loadCategory();
-            if (ConDB.userRole == 1 || ConDB.userRole == 2)
-            {
-                sales_input.Enabled = true;
-                sales_input.ReadOnly = false;
-            }
+            //if (ConDB.userRole == 1 || ConDB.userRole == 2)
+            //{
+            //    sales_input.Enabled = true;
+            //    sales_input.ReadOnly = false;
+            //}
             name_input.Text = string.Empty;
             amount_input.Text = "0";
             price_input.Text = "0";
@@ -257,10 +272,10 @@ namespace SistemaDeVentas
                         ConDB.CreatePackProduct(idpack_product, DetailsPackDatagrid.Rows[i].Cells["id"].FormattedValue.ToString(), DetailsPackDatagrid.Rows[i].Cells["name"].FormattedValue.ToString(), DetailsPackDatagrid.Rows[i].Cells["amount"].FormattedValue.ToString(), DetailsPackDatagrid.Rows[i].Cells["barcode"].FormattedValue.ToString());
                     }
                 }
-                if ((ConDB.userRole == 1 || ConDB.userRole == 2) && ConDB.RegisterWareHouseEntry(row_selected_id, name_input.Text, sales_input.Text, amount))
-                {
-                    MessageBox.Show("Entrada en almacen exitosa", "Exito!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                }
+                //if ((ConDB.userRole == 1 || ConDB.userRole == 2) && ConDB.RegisterWareHouseEntry(row_selected_id, name_input.Text, sales_input.Text, amount))
+                //{
+                //    MessageBox.Show("Entrada en almacen exitosa", "Exito!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                //}
                 clean();
                 filterTextBox.Focus();
             }
@@ -296,10 +311,10 @@ namespace SistemaDeVentas
                         ConDB.UpdatePackProduct(idpack_product, DetailsPackDatagrid.Rows[i].Cells["id"].FormattedValue.ToString(), DetailsPackDatagrid.Rows[i].Cells["name"].FormattedValue.ToString(), DetailsPackDatagrid.Rows[i].Cells["amount"].FormattedValue.ToString(), DetailsPackDatagrid.Rows[i].Cells["barcode"].FormattedValue.ToString());
                     }
                 }
-                if ((ConDB.userRole == 1 || ConDB.userRole == 2) && ConDB.RegisterWareHouseEntry(row_selected_id, name_input.Text, sales_input.Text, amount))
-                {
-                    MessageBox.Show("Entrada en almacen exitosa", "Exito!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                }
+                //if ((ConDB.userRole == 1 || ConDB.userRole == 2) && ConDB.RegisterWareHouseEntry(row_selected_id, name_input.Text, sales_input.Text, amount))
+                //{
+                //    MessageBox.Show("Entrada en almacen exitosa", "Exito!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                //}
                 clean();
                 filterTextBox.Focus();
             }
@@ -315,8 +330,8 @@ namespace SistemaDeVentas
             {
                 if (ConDB.DeleteProduct(row_selected_id, name_input.Text))
                 {
-                    MessageBox.Show("El Producto fue eliminado exitosamente", "Exito!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                     clean();
+                    MessageBox.Show("El Producto fue eliminado exitosamente", "Exito!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                     filterTextBox.Focus();
                 }
                 else
@@ -329,6 +344,7 @@ namespace SistemaDeVentas
         private void InventoryForm_Shown(object sender, EventArgs e)
         {
             setDetailsGridFormat();
+            clean();
             filterTextBox.Focus();
         }
 
@@ -479,5 +495,12 @@ namespace SistemaDeVentas
         {
         }
 
+        private void filterTextBox_TextChanged(object sender, EventArgs e)
+        {
+            filter_word = ConDB.validString(filterTextBox.Text);
+            filterTextBox.Text = filter_word;
+            InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word, isSales: false, isInventory: true);
+            formatDataGrid();
+        }
     }
 }
