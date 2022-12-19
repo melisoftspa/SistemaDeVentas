@@ -60,6 +60,7 @@ namespace SistemaDeVentas
             {
                 Hide();
                 ConDB.mainForm = new MainForm();
+                ConDB.mainForm.Location = Screen.AllScreens[0].WorkingArea.Location;
                 ConDB.mainForm.ShowDialog();
                 Close();
             }

@@ -18,6 +18,8 @@ namespace SistemaDeVentas
 
         private DataTable detailsDataTable = new DataTable();
 
+        private DataTable _fullInventary = new DataTable();
+
         public InventoryForm()
         {
             InitializeComponent();
@@ -63,13 +65,8 @@ namespace SistemaDeVentas
             InventoryDataGrid.Columns["bar_code"].HeaderText = "Codigo de Barras";
             InventoryDataGrid.Columns["expiration"].HeaderText = "Fecha Vencimiento";
             InventoryDataGrid.Columns["id"].Visible = false;
-            InventoryDataGrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            InventoryDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            InventoryDataGrid.Columns["minimum"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            InventoryDataGrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             InventoryDataGrid.Columns["price"].DefaultCellStyle.Format = "C";
             InventoryDataGrid.Columns["price"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
-            InventoryDataGrid.Columns["bar_code"].Visible = false;
             InventoryDataGrid.Columns["photo"].Visible = false;
             InventoryDataGrid.Columns["stock"].Visible = false;
             InventoryDataGrid.Columns["price"].Visible = true;
@@ -82,7 +79,12 @@ namespace SistemaDeVentas
             InventoryDataGrid.Columns["isPack"].Visible = false;
             InventoryDataGrid.Columns["id_pack"].Visible = false;
             InventoryDataGrid.Columns["id_subcategory"].Visible = false;
-            InventoryDataGrid.Refresh();            
+            InventoryDataGrid.Columns["_RowString"].Visible = false;
+            InventoryDataGrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+            InventoryDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            InventoryDataGrid.Columns["minimum"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            InventoryDataGrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            InventoryDataGrid.Columns["bar_code"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
             // Now that DataGridView has calculated it's Widths; we can now store each column Width values.
             for (int i = 0; i <= InventoryDataGrid.Columns.Count - 1; i++)
@@ -94,6 +96,7 @@ namespace SistemaDeVentas
                 // Set Width to calculated AutoSize value:
                 InventoryDataGrid.Columns[i].Width = colw;
             }
+            InventoryDataGrid.Refresh();            
         }
 
         private void setDetailsGridFormat()
@@ -106,10 +109,7 @@ namespace SistemaDeVentas
             detailsDataTable.Columns.Add("barcode");
             DetailsPackDatagrid.Columns["id"].Visible = false;
             DetailsPackDatagrid.Columns["barcode"].Visible = false;
-            DetailsPackDatagrid.Columns["price"].Visible = false;
-            DetailsPackDatagrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            DetailsPackDatagrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            DetailsPackDatagrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            //DetailsPackDatagrid.Columns["price"].Visible = false;
             DetailsPackDatagrid.Columns["name"].HeaderText = "Nombre del Producto";
             DetailsPackDatagrid.Columns["price"].HeaderText = "Precio Unidad";
             DetailsPackDatagrid.Columns["amount"].HeaderText = "Cantidad";
@@ -126,6 +126,10 @@ namespace SistemaDeVentas
                 // Set Width to calculated AutoSize value:
                 DetailsPackDatagrid.Columns[i].Width = colw;
             }
+            DetailsPackDatagrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+            DetailsPackDatagrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DetailsPackDatagrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DetailsPackDatagrid.Refresh();
         }
 
         private void InventoryDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -153,10 +157,18 @@ namespace SistemaDeVentas
             name_input.Text = text;
             amount_input.Text = text2.Replace(",00", "");
             price_input.Text = text3.Replace(",00", "");
-            if (ConDB.userRole == 1 || ConDB.userRole == 2)
-            {
-                sales_input.Text = text6.Replace(",00", "");
-            }
+            sales_input.Text = text6.Replace(",00", "");
+            //if (ConDB.userRole == 1 || ConDB.userRole == 2)
+            //{
+            //    amount_input.ReadOnly = false;
+            //    sales_input.ReadOnly = false;
+            //    amount_input.Enabled = true;
+            //    sales_input.Enabled = true;
+            //}
+            amount_input.ReadOnly = true;
+            sales_input.ReadOnly = true;
+            amount_input.Enabled = false;
+            sales_input.Enabled = false;
             minimum_input.Text = text4;
             barcode_input.Text = text5;
             listIVA_combobox.SelectedValue = selectedValue;
@@ -206,7 +218,8 @@ namespace SistemaDeVentas
 
         private void clean()
         {
-            InventoryDataGrid.DataSource = ConDB.getProductsList("", isSales: false, isInventory: true);
+            _fullInventary = ConDB.getProductsList("", isSales: false, isInventory: true);
+            InventoryDataGrid.DataSource = _fullInventary;
             formatDataGrid();
             loadListCBIVA();
             loadCategory();
@@ -497,9 +510,15 @@ namespace SistemaDeVentas
 
         private void filterTextBox_TextChanged(object sender, EventArgs e)
         {
-            filter_word = ConDB.validString(filterTextBox.Text);
-            filterTextBox.Text = filter_word;
-            InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word, isSales: false, isInventory: true);
+            filter_word = ConDB.validString(filterTextBox.Text.Trim());
+            if (string.IsNullOrEmpty(filter_word))
+            {
+                InventoryDataGrid.DataSource = _fullInventary;
+            }
+            else
+            {
+                (InventoryDataGrid.DataSource as DataTable).DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
+            }
             formatDataGrid();
         }
     }

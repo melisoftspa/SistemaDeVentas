@@ -1,7 +1,10 @@
 ﻿using System.Data;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Drawing.Printing;
-using IronBarCode;
 using LibPrintTicket;
+using Pdf417EncoderLibraryExt;
 using SistemaDeVentas.Models;
 
 namespace SistemaDeVentas
@@ -33,6 +36,8 @@ namespace SistemaDeVentas
         private int current_stock;
 
         private DataTable detailsDataTable = new DataTable();
+
+        private DataTable _fullInventary = new DataTable();
 
         private readonly Font printFont;
 
@@ -72,7 +77,8 @@ namespace SistemaDeVentas
         {
             InitializeComponent();
             StartTimer();
-            InventoryDataGrid.DataSource = ConDB.getProductsList("", isSales: true);
+            _fullInventary = ConDB.getProductsList("", isSales: true);
+            InventoryDataGrid.DataSource = _fullInventary;
             setProductsGridFormat();
             vendor_label.Text = string.Format(_welcome, ConDB.userName, ConDB.getTotalInvoiceSales("", "", ConDB.userId), ConDB.getTotalSales("", "", ConDB.userId).ToString("c"));
             try
@@ -159,7 +165,7 @@ namespace SistemaDeVentas
             InventoryDataGrid.Columns["state"].Visible = false;
             InventoryDataGrid.Columns["exenta"].Visible = false;
             InventoryDataGrid.Columns["id_tax"].Visible = false;
-            InventoryDataGrid.Columns["tax"].Visible = false;
+            InventoryDataGrid.Columns["_RowString"].Visible = false;
             InventoryDataGrid.Columns["id_category"].Visible = false;
             InventoryDataGrid.Columns["isPack"].Visible = false;
             InventoryDataGrid.Columns["id_pack"].Visible = false;
@@ -175,10 +181,10 @@ namespace SistemaDeVentas
                 InventoryDataGrid.Columns[i].Width = colw;
             }
             InventoryDataGrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-            InventoryDataGrid.Columns["sale_price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            InventoryDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            InventoryDataGrid.Columns["expiration"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            InventoryDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            InventoryDataGrid.Columns["sale_price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             InventoryDataGrid.Columns["bar_code"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            InventoryDataGrid.Columns["expiration"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
         }
 
         private void setDetailsGridFormat()
@@ -191,6 +197,7 @@ namespace SistemaDeVentas
             detailsDataTable.Columns.Add("total");
             detailsDataTable.Columns.Add("tax");
             detailsDataTable.Columns.Add("exenta");
+            detailsDataTable.Columns.Add("stock");
             DetailDataGrid.Columns["id"].Visible = false;
             DetailDataGrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             DetailDataGrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -198,6 +205,7 @@ namespace SistemaDeVentas
             DetailDataGrid.Columns["total"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             DetailDataGrid.Columns["tax"].Visible = false;
             DetailDataGrid.Columns["exenta"].Visible = false;
+            DetailDataGrid.Columns["stock"].Visible = false;
             DetailDataGrid.Columns["name"].HeaderText = "Nombre del Producto";
             DetailDataGrid.Columns["price"].HeaderText = "Precio Unidad";
             DetailDataGrid.Columns["amount"].HeaderText = "Cantidad";
@@ -237,6 +245,7 @@ namespace SistemaDeVentas
 
         private void addToDetails(string id_product = "")
         {
+            lblMensajeErrorCodeBar.Text = string.Empty;
             if (row_selected_id == "" && name_input.ReadOnly && price_input.ReadOnly)
             {
                 MessageBox.Show("Debe seleccionar un producto", "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
@@ -256,6 +265,11 @@ namespace SistemaDeVentas
                     float num2 = float.Parse(kg_input.Text.Replace(".", ","));
                     num = float.Parse(ConDB.validNumber(price_input.Text));
                     num = ConDB.Round(float.Parse(Math.Ceiling(num * num2).ToString()).ToString());
+                    if (current_name.Contains("KG"))
+                    {
+                        var name_text = current_name.Split("-");
+                        current_name = name_text[0];
+                    }
                     text = $"{current_name} - KG: {num2}";
                 }
                 else
@@ -334,11 +348,13 @@ namespace SistemaDeVentas
 
         private void amount_input_KeyUp(object sender, KeyEventArgs e)
         {
+            lblStockMax.Text = string.Empty;
             if (e.KeyCode == Keys.Return)
             {
                 string s = ConDB.validNumber(amount_input.Text.Trim());
                 try
                 {
+                    if(int.Parse(s) > current_stock) { lblStockMax.Text = $"El stock máximo para la venta es de {current_stock}"; return; }
                     current_amount = float.Parse(s);
                 }
                 catch (Exception)
@@ -407,7 +423,7 @@ namespace SistemaDeVentas
             detailsDataTable.Clear();
             cleanfields();
             EnabledProcessButton(active: false);
-            InventoryDataGrid.DataSource = ConDB.getProductsList(string.Empty, isSales: true);
+            InventoryDataGrid.DataSource = ConDB.getProductsList(isSales: true);
             setProductsGridFormat();
             barcode_input.Focus();
             vendor_label.Text = string.Format(_welcome, ConDB.userName, ConDB.getTotalInvoiceSales("", "", ConDB.userId), ConDB.getTotalSales("", "", ConDB.userId).ToString("c"));
@@ -446,15 +462,23 @@ namespace SistemaDeVentas
             {
                 return;
             }
-            if (e.ColumnIndex == 0)
+            else if (e.ColumnIndex == 0)
             {
-                float num = float.Parse(DetailDataGrid.Rows[e.RowIndex].Cells["amount"].FormattedValue.ToString()) + 1f;
-                float num2 = float.Parse(ConDB.validNumber(DetailDataGrid.Rows[e.RowIndex].Cells["price"].FormattedValue.ToString())) * num;
-                DetailDataGrid.Rows[e.RowIndex].Cells["amount"].Value = num;
-                DetailDataGrid.Rows[e.RowIndex].Cells["total"].Value = num2.ToString("C").Replace(",00", "");
+                DetailDataGrid.Rows.RemoveAt(e.RowIndex);
                 calculateTotalSale();
             }
             else if (e.ColumnIndex == 1)
+            {
+                float num = float.Parse(DetailDataGrid.Rows[e.RowIndex].Cells["amount"].FormattedValue.ToString()) + 1f;
+                if(Convert.ToInt32(num) <= current_stock)
+                {
+                    float num2 = float.Parse(ConDB.validNumber(DetailDataGrid.Rows[e.RowIndex].Cells["price"].FormattedValue.ToString())) * num;
+                    DetailDataGrid.Rows[e.RowIndex].Cells["amount"].Value = num;
+                    DetailDataGrid.Rows[e.RowIndex].Cells["total"].Value = num2.ToString("C").Replace(",00", "");
+                    calculateTotalSale();
+                }
+            }
+            else if (e.ColumnIndex == 2)
             {
                 float num3 = float.Parse(DetailDataGrid.Rows[e.RowIndex].Cells["amount"].FormattedValue.ToString()) - 1f;
                 if (num3 < 1f)
@@ -465,36 +489,8 @@ namespace SistemaDeVentas
                 DetailDataGrid.Rows[e.RowIndex].Cells["amount"].Value = num3;
                 DetailDataGrid.Rows[e.RowIndex].Cells["total"].Value = num4.ToString("C").Replace(",00", "");
                 calculateTotalSale();
-            }
-        }
-
-        private void DetailDataGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex == -1 || e.RowIndex >= DetailDataGrid.RowCount)
-            {
-                return;
-            }
-            if (e.ColumnIndex == 0)
-            {
-                float num = float.Parse(DetailDataGrid.Rows[e.RowIndex].Cells["amount"].FormattedValue.ToString()) + 1f;
-                float num2 = float.Parse(ConDB.validNumber(DetailDataGrid.Rows[e.RowIndex].Cells["price"].FormattedValue.ToString())) * num;
-                DetailDataGrid.Rows[e.RowIndex].Cells["amount"].Value = num;
-                DetailDataGrid.Rows[e.RowIndex].Cells["total"].Value = num2.ToString("C").Replace(",00", "");
-                calculateTotalSale();
-            }
-            else if (e.ColumnIndex == 1)
-            {
-                float num3 = float.Parse(DetailDataGrid.Rows[e.RowIndex].Cells["amount"].FormattedValue.ToString()) - 1f;
-                if (num3 < 1f)
-                {
-                    num3 = 1f;
-                }
-                float num4 = float.Parse(ConDB.validNumber(DetailDataGrid.Rows[e.RowIndex].Cells["price"].FormattedValue.ToString())) * num3;
-                DetailDataGrid.Rows[e.RowIndex].Cells["amount"].Value = num3;
-                DetailDataGrid.Rows[e.RowIndex].Cells["total"].Value = num4.ToString("C").Replace(",00", "");
-                calculateTotalSale();
-            }
-            else
+            } 
+            else if (e.ColumnIndex == 3)
             {
                 TextBox textBox = name_input;
                 TextBox textBox2 = price_input;
@@ -507,9 +503,26 @@ namespace SistemaDeVentas
                 current_amount = float.Parse(ConDB.validNumber(amount_input.Text));
                 row_selected_id = DetailDataGrid.Rows[e.RowIndex].Cells["id"].FormattedValue.ToString();
                 DetailDataGrid.Rows.RemoveAt(e.RowIndex);
-                amount_input.Focus();
+                if (name_input.Text.Contains("KG"))
+                {
+                    var kg_text = name_input.Text.Split(":");
+                    kg_input.Text = kg_text[1].Trim();
+                    kg_input.Focus();
+                    kg_input.Select();
+                } 
+                else
+                {
+                    amount_input.Focus();
+                }
                 Addproductsale_button.Enabled = false;
-                calculateTotalSale();
+            }
+        }
+
+        private void DetailDataGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == -1 || e.RowIndex >= DetailDataGrid.RowCount)
+            {
+                return;
             }
         }
 
@@ -532,18 +545,19 @@ namespace SistemaDeVentas
         {
             if (e.KeyCode == Keys.Return)
             {
-                List<string> productByBarcode = ConDB.getProductByBarcode(barcode_input.Text);
+                List<string> productByBarcode = ConDB.getProductByBarcode(barcode_input.Text, true);
                 if (productByBarcode.Count != 0)
                 {
                     row_selected_id = productByBarcode[0];
                     name_input.Text = (current_name = productByBarcode[1]);
                     price_input.Text = (current_price = float.Parse(ConDB.validNumber(productByBarcode[2])).ToString("C").Replace(",00", ""));
                     current_tax = float.Parse(productByBarcode[5]);
-                    current_exenta = bool.Parse(productByBarcode[6]);
+                    current_exenta = Convert.ToBoolean(Convert.ToInt32(productByBarcode[6]));
+                    current_stock = int.Parse(productByBarcode[3]);
                     current_amount = 1f;
                     addToDetails(row_selected_id);
                     barcode_input.SelectAll();
-                }
+                } else { lblMensajeErrorCodeBar.Text = "Producto no ingresado en Almacen"; }
             }
         }
 
@@ -930,7 +944,14 @@ namespace SistemaDeVentas
 
         private void CleanButton_Click(object sender, EventArgs e)
         {
-            ClearFinishSale();
+            //ClearFinishSale();
+            cleanfields();
+            name_input.ReadOnly = true;
+            price_input.ReadOnly = true;
+            name_input.TabStop = false;
+            price_input.TabStop = false;
+            barcode_input.Focus();
+            calculateTotalSale();
         }
 
         private void Addproductsale_button_Click(object sender, EventArgs e)
@@ -1122,10 +1143,17 @@ namespace SistemaDeVentas
             barcode_input.Focus();
         }
 
-        internal void PrintInvoice()
+        internal void PrintInvoice(string nroTicket = "")
         {
-            Ticket ticket = new Ticket();
-            DataTable dataTable = ConDB.Current_invoice_details(current_invoice_nroTicket);
+            Ticket ticket = new();
+            DataTable dataTable;
+            if (string.IsNullOrEmpty(nroTicket))
+            {
+                dataTable = ConDB.Current_invoice_details(current_invoice_nroTicket);
+            } else
+            {
+                dataTable = ConDB.Current_invoice_details(int.Parse(nroTicket));
+            }
             try
             {
                 string text = $"TICKET: {current_invoice_nroTicket}, TOTAL: {current_invoice_totalInvoice}, FECHA: {DateTime.Now.ToShortDateString()}, HORA: {DateTime.Now.ToShortTimeString()}, VENDEDOR: {ConDB.userName}" + Environment.NewLine;
@@ -1135,15 +1163,26 @@ namespace SistemaDeVentas
                     text += dataTable.Rows[i]["name"].ToString().ToUpper();
                     text = text + string.Format("{0:C0}", dataTable.Rows[i]["total"]).Replace(",00", "") + Environment.NewLine;
                 }
-                Bitmap headerImage = BarcodeWriter.CreateBarcode(text, BarcodeEncoding.PDF417).ToBitmap();
-                ticket.HeaderImage = headerImage;
+
+                // https://www.codeproject.com/Articles/1347529/PDF417-Barcode-Encoder-Class-Library-and-Demo-App
+                // create PDF417 barcode object
+                Pdf417BarcodeEncoder Encoder = new Pdf417BarcodeEncoder
+                {
+                    // change default data columns
+                    DefaultDataColumns = 10,
+                };
+
+                // encode barcode data
+                Encoder.Encode(text);
+                ticket.HeaderImage = Encoder.CreateBarcodeBitmap();                
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 //Bitmap headerImage2 = new Bitmap(Resources.barcode);
                 //ticket.HeaderImage = headerImage2;
             }
-            ticket.AddHeaderLine("TIMBRE ELECTRONICO");
+            ticket.AddHeaderLine("DETALLE DE COMPRA");
             ticket.AddHeaderLine("");
             foreach (string dataHeadPo in ConDB.getDataHeadPos())
             {
@@ -1153,7 +1192,7 @@ namespace SistemaDeVentas
             {
                 ticket.AddSubHeaderLine("VENDEDOR: " + ConDB.userName);
             }
-            ticket.AddSubHeaderLine($"BOLETA ELECTRONICA NRO#: {current_invoice_nroTicket}");
+            ticket.AddSubHeaderLine($"NOTA DE PEDIDO NRO#: {current_invoice_nroTicket}");
             ticket.AddSubHeaderLine("FECHA: " + DateTime.Now.ToShortDateString() + "       HORA: " + DateTime.Now.ToShortTimeString());
             for (int j = 0; j < dataTable.Rows.Count; j++)
             {
@@ -1202,11 +1241,28 @@ namespace SistemaDeVentas
             }
         }
 
+        private static Bitmap ScaleImage(Bitmap bmp, int maxWidth, int maxHeight)
+        {
+            var ratioX = (double)maxWidth / bmp.Width;
+            var ratioY = (double)maxHeight / bmp.Height;
+            var ratio = Math.Min(ratioX, ratioY);
+            var newWidth = (int)(bmp.Width * ratio);
+            var newHeight = (int)(bmp.Height * ratio);
+            var newImage = new Bitmap(newWidth, newHeight, PixelFormat.Format24bppRgb);
+            using (var graphics = Graphics.FromImage(newImage))
+            {
+                graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                graphics.DrawImage(bmp, 0, 0, newWidth, newHeight);
+            }
+            return newImage;
+        }
+
         private void reprint_button_Click(object sender, EventArgs e)
         {
             if (current_invoice_nroTicket > 0)
             {
-                PrintInvoice();
+                PrintInvoice(ticket_input.Text);
             }
         }
 
@@ -1304,22 +1360,20 @@ namespace SistemaDeVentas
 
         private void filterTextBox_TextChanged(object sender, EventArgs e)
         {
-            filter_word = filterTextBox.Text.Trim();
+            filter_word = ConDB.validString(filterTextBox.Text.Trim());
             if (string.IsNullOrEmpty(filter_word)) {
-                InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word, isSales: true);
+                InventoryDataGrid.DataSource = _fullInventary;
             } else {
-                //BindingSource bs = new BindingSource();
-                var datalist = ((DataTable)InventoryDataGrid.DataSource).AsEnumerable().Select(row => new Product { 
-                    Name = row.Field<string>("name"), BarCode = row.Field<string>("bar_code"), Amount = row.Field<int>("amount") 
-                }).ToList();
-                var resultado = datalist.Where(p => p.Name.Contains(filter_word) || p.BarCode.Contains(filter_word) || p.Amount.ToString().Contains(filter_word) );
-                //bs.Filter = InventoryDataGrid.Columns[5].HeaderText.ToString() + " LIKE '%" + txtbxSearch.Text + "%'";
-                InventoryDataGrid.DataSource = resultado;
-                //InventoryDataGrid.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
-                //(InventoryDataGrid.DataSource as DataTable).DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
+                (InventoryDataGrid.DataSource as DataTable).DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
 
             }
             setProductsGridFormat();
+        }
+
+        private void btnCleanSearch_Click(object sender, EventArgs e)
+        {
+            ClearFinishSale();
+            filterTextBox.Focus();
         }
     }
 }

@@ -18,10 +18,12 @@ namespace SistemaDeVentas
 
         private string original_amount = "";
 
+        private DataTable _fullInventary = new DataTable();
+
         public PurchaseForm()
         {
             InitializeComponent();
-            InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word);
+            InventoryDataGrid.DataSource = ConDB.getProductsList(isPurchase: true);
             formatDataGrid();
             DeleteButton.Visible = false;
         }
@@ -30,10 +32,7 @@ namespace SistemaDeVentas
         {
             if (e.KeyCode == Keys.Return)
             {
-                filter_word = ConDB.validString(filterTextBox.Text);
-                filterTextBox.Text = filter_word;
-                InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word);
-                formatDataGrid();
+                
             }
         }
 
@@ -43,22 +42,34 @@ namespace SistemaDeVentas
             InventoryDataGrid.Columns["amount"].HeaderText = "Cantidad";
             InventoryDataGrid.Columns["sale_price"].HeaderText = "precio de venta";
             InventoryDataGrid.Columns["price"].HeaderText = "precio de compra";
+            InventoryDataGrid.Columns["bar_code"].HeaderText = "Codigo de Barras";
             InventoryDataGrid.Columns["sale_price"].DefaultCellStyle.Format = "C";
             InventoryDataGrid.Columns["sale_price"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
             InventoryDataGrid.Columns["price"].DefaultCellStyle.Format = "C";
             InventoryDataGrid.Columns["price"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
-            InventoryDataGrid.Columns["id"].Visible = false;
-            InventoryDataGrid.Columns["name"].Width = 280;
-            InventoryDataGrid.Columns["amount"].Width = 60;
-            InventoryDataGrid.Columns["sale_price"].Width = 60;
-            InventoryDataGrid.Columns["price"].Width = 60;
-            InventoryDataGrid.Columns["minimum"].Visible = false;
-            InventoryDataGrid.Columns["bar_code"].Visible = false;
-            InventoryDataGrid.Columns["photo"].Visible = false;
-            InventoryDataGrid.Columns["stock"].Visible = false;
-            InventoryDataGrid.Columns["line"].Visible = false;
-            InventoryDataGrid.Columns["date"].Visible = false;
-            InventoryDataGrid.Columns["state"].Visible = false;
+
+            // Now that DataGridView has calculated it's Widths; we can now store each column Width values.
+            for (int i = 0; i <= InventoryDataGrid.Columns.Count - 1; i++)
+            {
+                // Store Auto Sized Widths:
+                int colw = InventoryDataGrid.Columns[i].Width;
+                // Remove AutoSizing:
+                InventoryDataGrid.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                // Set Width to calculated AutoSize value:
+                InventoryDataGrid.Columns[i].Width = colw;
+                InventoryDataGrid.Columns[i].Visible = false;
+            }
+            InventoryDataGrid.Columns["name"].Visible = true;
+            InventoryDataGrid.Columns["amount"].Visible = true;
+            InventoryDataGrid.Columns["price"].Visible = true;
+            InventoryDataGrid.Columns["sale_price"].Visible = true;
+            InventoryDataGrid.Columns["bar_code"].Visible = true;
+            InventoryDataGrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+            InventoryDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            InventoryDataGrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            InventoryDataGrid.Columns["sale_price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            InventoryDataGrid.Columns["bar_code"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            InventoryDataGrid.Refresh();
         }
 
         private void clean()
@@ -69,6 +80,8 @@ namespace SistemaDeVentas
             filterTextBox.Text = string.Empty;
             barcode_input.Text = string.Empty;
             barcode_input.Focus();
+            _fullInventary = ConDB.getProductsList(filter_word);
+            InventoryDataGrid.DataSource = _fullInventary;
         }
 
         private void InventoryDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -104,7 +117,6 @@ namespace SistemaDeVentas
                 else if (ConDB.RegisterWareHouseEntry(row_selected_id, name_input.Text, text2, text))
                 {
                     MessageBox.Show("Entrada en almacen exitosa", "Exito!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                    InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word);
                     formatDataGrid();
                     clean();
                     filterTextBox.Focus();
@@ -152,7 +164,6 @@ namespace SistemaDeVentas
                 if (ConDB.DeleteWareHouseEntry(row_selected_id))
                 {
                     MessageBox.Show("El Producto fue eliminado exitosamente del almacen", "Exito!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                    InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word);
                     formatDataGrid();
                     clean();
                     filterTextBox.Focus();
@@ -167,7 +178,26 @@ namespace SistemaDeVentas
         private void PurchaseForm_Load(object sender, EventArgs e)
         {
             barcode_input.Focus();
+            _fullInventary = ConDB.getProductsList(filter_word);
         }
 
+        private void filterTextBox_TextChanged(object sender, EventArgs e)
+        {
+            filter_word = ConDB.validString(filterTextBox.Text.Trim());
+            if (string.IsNullOrEmpty(filter_word))
+            {
+                InventoryDataGrid.DataSource = _fullInventary;
+            }
+            else
+            {
+                (InventoryDataGrid.DataSource as DataTable).DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
+            }
+            formatDataGrid();
+        }
+
+        private void btnCleanSearch_Click(object sender, EventArgs e)
+        {
+            clean();
+        }
     }
 }

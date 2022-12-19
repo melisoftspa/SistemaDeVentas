@@ -108,22 +108,39 @@ namespace SistemaDeVentas
             MainDataGrid.Columns["payment_cash"].HeaderText = "Pago Efetivo";
             MainDataGrid.Columns["payment_other"].HeaderText = "Pago Tarjeta";
             MainDataGrid.Columns["ticket"].HeaderText = "Nro. Boleta";
-            MainDataGrid.Columns["ticket"].Width = 50;
-            MainDataGrid.Columns["amount"].Width = 50;
-            MainDataGrid.Columns["tax"].Width = 70;
-            MainDataGrid.Columns["total"].Width = 70;
-            MainDataGrid.Columns["change"].Width = 70;
-            MainDataGrid.Columns["payment_cash"].Width = 70;
-            MainDataGrid.Columns["payment_other"].Width = 70;
-            MainDataGrid.Columns["date"].Width = 100;
-            MainDataGrid.Columns["id_user"].Visible = false;
-            MainDataGrid.Columns["name"].Visible = false;
-            MainDataGrid.Columns["id"].Visible = false;
             MainDataGrid.Columns["total"].DefaultCellStyle.Format = "c";
             MainDataGrid.Columns["tax"].DefaultCellStyle.Format = "c";
             MainDataGrid.Columns["change"].DefaultCellStyle.Format = "c";
             MainDataGrid.Columns["payment_cash"].DefaultCellStyle.Format = "c";
             MainDataGrid.Columns["payment_other"].DefaultCellStyle.Format = "c";
+            // Now that DataGridView has calculated it's Widths; we can now store each column Width values.
+            for (int i = 0; i <= MainDataGrid.Columns.Count - 1; i++)
+            {
+                // Store Auto Sized Widths:
+                int colw = MainDataGrid.Columns[i].Width;
+                // Remove AutoSizing:
+                MainDataGrid.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                // Set Width to calculated AutoSize value:
+                MainDataGrid.Columns[i].Width = colw;
+                MainDataGrid.Columns[i].Visible = false;
+            }
+            MainDataGrid.Columns["ticket"].Visible = true;
+            MainDataGrid.Columns["amount"].Visible = true;
+            MainDataGrid.Columns["tax"].Visible = true;
+            MainDataGrid.Columns["total"].Visible = true;
+            MainDataGrid.Columns["change"].Visible = true;
+            MainDataGrid.Columns["payment_cash"].Visible = true;
+            MainDataGrid.Columns["payment_other"].Visible = true;
+            MainDataGrid.Columns["date"].Visible = true;
+
+            MainDataGrid.Columns["ticket"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            MainDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            MainDataGrid.Columns["tax"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            MainDataGrid.Columns["total"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            MainDataGrid.Columns["change"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            MainDataGrid.Columns["payment_cash"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            MainDataGrid.Columns["payment_other"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            MainDataGrid.Columns["date"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         private void formatDataGrid_details()
@@ -136,17 +153,28 @@ namespace SistemaDeVentas
             detailDataGrid.Columns["price"].DefaultCellStyle.Format = "c";
             detailDataGrid.Columns["total"].DefaultCellStyle.Format = "c";
             detailDataGrid.Columns["total_tax"].DefaultCellStyle.Format = "c";
-            detailDataGrid.Columns["id"].Visible = false;
-            detailDataGrid.Columns["id_sale"].Visible = false;
-            detailDataGrid.Columns["id_product"].Visible = false;
-            detailDataGrid.Columns["date"].Visible = false;
-            detailDataGrid.Columns["tax"].Visible = false;
-            detailDataGrid.Columns["state"].Visible = false;
-            detailDataGrid.Columns["product_name"].Width = 250;
-            detailDataGrid.Columns["amount"].Width = 60;
-            detailDataGrid.Columns["price"].Width = 70;
-            detailDataGrid.Columns["total"].Width = 70;
-            detailDataGrid.Columns["total_tax"].Width = 50;
+            // Now that DataGridView has calculated it's Widths; we can now store each column Width values.
+            for (int i = 0; i <= detailDataGrid.Columns.Count - 1; i++)
+            {
+                // Store Auto Sized Widths:
+                int colw = detailDataGrid.Columns[i].Width;
+                // Remove AutoSizing:
+                detailDataGrid.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                // Set Width to calculated AutoSize value:
+                detailDataGrid.Columns[i].Width = colw;
+                detailDataGrid.Columns[i].Visible = false;
+            }
+            detailDataGrid.Columns["product_name"].Visible = true;
+            detailDataGrid.Columns["amount"].Visible = true;
+            detailDataGrid.Columns["price"].Visible = true;
+            detailDataGrid.Columns["total"].Visible = true;
+            detailDataGrid.Columns["total_tax"].Visible = true;
+
+            detailDataGrid.Columns["product_name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            detailDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            detailDataGrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            detailDataGrid.Columns["total"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            detailDataGrid.Columns["total_tax"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
         }
 
         private void formatDataGrid_entries()
@@ -181,47 +209,30 @@ namespace SistemaDeVentas
             labelGrid1.Text = "Ventas:";
             detail_label.Visible = true;
             detailDataGrid.Visible = true;
+
             total_label.Visible = true;
             total_label.Text = "Total Ventas:";
-            total_label.Location = new Point
-            {
-                X = 242,
-                Y = total_label.Location.Y
-            };
             total_input.Visible = true;
             total_input.Text = "$0";
-            total_input.Location = new Point
-            {
-                X = 346,
-                Y = total_input.Location.Y
-            };
+
             totalInvoice_label.Visible = true;
-            totalInvoice_input.Visible = true;
             totalInvoice_label.Text = "Total Boletas:";
+            totalInvoice_input.Visible = true;
             totalInvoice_input.Text = "$0";
-            totalInvoice_input.Width = 100;
+
             totalTax_label.Visible = true;
             totalTax_label.Text = "Total IVA:";
-            totalTax_label.Location = new Point
-            {
-                X = 266,
-                Y = totalTax_label.Location.Y
-            };
             totalTax_input.Visible = true;
             totalTax_input.Text = "$0";
-            totalTax_input.Location = new Point
-            {
-                X = 346,
-                Y = totalTax_input.Location.Y
-            };
-            totalTax_input.Width = 100;
+
             totalAfecta_label.Visible = true;
             totalAfecta_input.Visible = true;
             totalAfecta_input.Text = "$0";
+
             totalExenta_label.Visible = true;
             totalExenta_input.Visible = true;
             totalExenta_input.Text = "$0";
-            MainDataGrid.Width = 480;
+
             MainDataGrid.DataSource = null;
             MainDataGrid.Refresh();
             detailDataGrid.DataSource = null;
@@ -245,6 +256,7 @@ namespace SistemaDeVentas
             percent_label.Visible = true;
             percent_input.Visible = true;
             print_button.Visible = true;
+            lblResumenPrint.Visible = true;
         }
 
         private void ingreso_radio_CheckedChanged(object sender, EventArgs e)
@@ -259,7 +271,6 @@ namespace SistemaDeVentas
             totalInvoice_input.Visible = false;
             totalTax_label.Visible = false;
             totalTax_input.Visible = false;
-            MainDataGrid.Width = 850;
             MainDataGrid.DataSource = null;
             MainDataGrid.Refresh();
             detailDataGrid.DataSource = null;
@@ -284,6 +295,7 @@ namespace SistemaDeVentas
             percent_input.Visible = false;
             totalPercent_input.Visible = false;
             print_button.Visible = false;
+            lblResumenPrint.Visible = false;
         }
 
         private void producto_radio_CheckedChanged(object sender, EventArgs e)
@@ -293,38 +305,15 @@ namespace SistemaDeVentas
             detail_label.Visible = false;
             total_label.Visible = true;
             total_label.Text = "Total Vendido:";
-            total_label.Location = new Point
-            {
-                X = 255,
-                Y = total_label.Location.Y
-            };
             total_input.Visible = true;
-            total_input.Location = new Point
-            {
-                X = 359,
-                Y = total_input.Location.Y
-            };
             totalInvoice_label.Visible = true;
             totalInvoice_label.Text = "Total Invertido:";
             totalInvoice_input.Visible = true;
             totalInvoice_input.Text = "$0";
-            totalInvoice_input.Width = 120;
             totalTax_label.Visible = true;
             totalTax_label.Text = "Total Por Vender:";
-            totalTax_label.Location = new Point
-            {
-                X = 460,
-                Y = totalTax_label.Location.Y
-            };
             totalTax_input.Visible = true;
             totalTax_input.Text = "$0";
-            totalTax_input.Width = 120;
-            totalTax_input.Location = new Point
-            {
-                X = 585,
-                Y = totalTax_input.Location.Y
-            };
-            MainDataGrid.Width = 850;
             MainDataGrid.DataSource = null;
             MainDataGrid.Refresh();
             detailDataGrid.DataSource = null;
@@ -349,6 +338,7 @@ namespace SistemaDeVentas
             percent_input.Visible = false;
             totalPercent_input.Visible = false;
             print_button.Visible = false;
+            lblResumenPrint.Visible = false;
         }
 
         private void decrease_radio_CheckedChanged(object sender, EventArgs e)
@@ -364,7 +354,6 @@ namespace SistemaDeVentas
             totalInvoice_input.Text = "$0";
             totalTax_label.Visible = false;
             totalTax_input.Visible = false;
-            MainDataGrid.Width = 850;
             MainDataGrid.DataSource = null;
             MainDataGrid.Refresh();
             detailDataGrid.DataSource = null;
@@ -389,6 +378,7 @@ namespace SistemaDeVentas
             percent_input.Visible = false;
             totalPercent_input.Visible = false;
             print_button.Visible = false;
+            lblResumenPrint.Visible = false;
         }
 
         private void Historic_FormClosing(object sender, FormClosingEventArgs e)
@@ -479,5 +469,19 @@ namespace SistemaDeVentas
             }
         }
 
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Historic_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

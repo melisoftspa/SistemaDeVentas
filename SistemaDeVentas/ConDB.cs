@@ -399,26 +399,34 @@ namespace SistemaDeVentas
         {
             try
             {
-                string text = "select dbo.product.*, dbo.tax.Text as tax from dbo.product with(nolock) inner join dbo.tax with(nolock) on dbo.product.id_tax = dbo.tax.id where 1=1 ";
+                string text = "select dbo.product.* from dbo.product with(nolock) INNER JOIN dbo.entries with(nolock) ON dbo.product.id = dbo.entries.id_product where dbo.entries.state = 1 and dbo.product.amount > 0 ";
+                if (isInventory)
+                {
+                    text = "select dbo.product.* from dbo.product with(nolock) where 1=1 ";
+                }
+                if (isPurchase)
+                {
+                    text = "select * from product where id not in (select id_product from entries) ";
+                }
                 if (string.IsNullOrEmpty(word))
                 {
                     if (isSales)
                     {
-                        text += "and sale_price is not null and sale_price > 0 ";
+                        text += "and dbo.product.sale_price is not null and dbo.product.sale_price > 0 ";
                     }
-                    text = ((!isInventory) ? (text + "and state = 1 and amount >= minimum;") : (text + "and state = 1 "));
+                    text = ((!isInventory) ? (text + "and dbo.product.state = 1 and dbo.product.amount >= dbo.product.minimum;") : (text + "and dbo.product.state = 1 "));
                 }
                 else
                 {
                     if (isSales)
                     {
-                        text += "and sale_price is not null and sale_price > 0 ";
+                        text += "and dbo.product.sale_price is not null and dbo.product.sale_price > 0 ";
                     }
                     if (!isInventory)
                     {
-                        text += "and amount >= minimum ";
+                        text += "and dbo.product.amount >= dbo.product.minimum ";
                     }
-                    text = text + $"and state = 1 and (coalesce(convert(nvarchar(max), name), '') + coalesce(convert(varchar(max), amount), '') + coalesce(convert(varchar(max), sale_price), '') + coalesce(convert(varchar(max), minimum), '') + coalesce(convert(varchar(max), bar_code), '') + coalesce(convert(varchar(max), stock), '') + coalesce(convert(varchar(max), price), '') + coalesce(convert(varchar(max), line), '') ) like '%{word}%';";
+                    text += text + $"and dbo.product.state = 1 and (coalesce(convert(nvarchar(max), dbo.product.name), '') + coalesce(convert(varchar(max), dbo.product.amount), '') + coalesce(convert(varchar(max), dbo.product.sale_price), '') + coalesce(convert(varchar(max), dbo.product.minimum), '') + coalesce(convert(varchar(max), dbo.product.bar_code), '') + coalesce(convert(varchar(max), dbo.product.stock), '') + coalesce(convert(varchar(max), dbo.product.price), '') + coalesce(convert(varchar(max), dbo.product.line), '') ) like '%{word}%';";
                 }
                 FormattableString query = $@"{text}";
                 DataTable dataTable = Context.ExecReturnQuery(query).Result;
@@ -426,17 +434,21 @@ namespace SistemaDeVentas
                 dictionary.Add("name", "asc");
                 dataTable.DefaultView.Sort = string.Join(",", dictionary.Select((KeyValuePair<string, string> x) => x.Key + " " + x.Value).ToArray());
                 dataTable = dataTable.DefaultView.ToTable();
-                //DataColumn dcRowString = dataTable.Columns.Add("_RowString", typeof(string));
+                
+                DataColumn dcRowString = dataTable.Columns.Add("_RowString", typeof(string));
                 foreach (DataRow row in dataTable.Rows)
                 {
                     row["name"] = row["name"].ToString().ToUpper();
-                    //StringBuilder sb = new StringBuilder();
-                    //for (int i = 0; i < dataTable.Columns.Count - 1; i++)
-                    //{
-                    //    sb.Append(row[i].ToString());
-                    //    sb.Append("\t");
-                    //}
-                    //row[dcRowString] = sb.ToString();
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < dataTable.Columns.Count - 1; i++)
+                    {
+                        if(dataTable.Columns[i].ColumnName == "name" || dataTable.Columns[i].ColumnName == "sale_price" || dataTable.Columns[i].ColumnName == "bar_code")
+                        {
+                            sb.Append(row[i].ToString());
+                            sb.Append("\t");
+                        }
+                    }
+                    row[dcRowString] = sb.ToString();
                 }
                 return dataTable;
             }
@@ -589,7 +601,7 @@ namespace SistemaDeVentas
                     new SqlParameter() { Direction = ParameterDirection.Output, ParameterName = "res", Value = num },
                 };
 
-                num = Context.RunQuery<int>("dbo.update_product", parameters).FirstOrDefault();
+                num = int.Parse(Context.RunQuery<string>("dbo.update_product", parameters).FirstOrDefault());
                 return num == 1;
             }
             catch (Exception ex)
@@ -612,7 +624,7 @@ namespace SistemaDeVentas
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "line", Value = name, DbType = DbType.String },
                     new SqlParameter() { Direction = ParameterDirection.Output, ParameterName = "res", Value = num },
                 };
-                num = Context.RunQuery<int>("dbo.delete_product", parameters).FirstOrDefault();
+                num = int.Parse(Context.RunQuery<string>("dbo.delete_product", parameters).FirstOrDefault());
                 return num == 1;
             }
             catch (Exception ex)
@@ -636,7 +648,7 @@ namespace SistemaDeVentas
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "total", Value = value, DbType = DbType.String },
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "userID", Value = userId, DbType = DbType.String },
                 };
-                Context.RunQuery<int>("dbo.create_entry", parameters);
+                Context.RunQuery<string>("dbo.create_entry", parameters);
                 return true;
             }
             catch (Exception ex)
@@ -655,7 +667,7 @@ namespace SistemaDeVentas
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "productID", Value = id_product, DbType = DbType.String },
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "userID", Value = userId, DbType = DbType.String },
                 };
-                Context.RunQuery<int>("dbo.delete_entry", parameters);
+                Context.RunQuery<string>("dbo.delete_entry", parameters);
                 return true;
             }
             catch (Exception ex)
@@ -670,11 +682,10 @@ namespace SistemaDeVentas
         {
             try
             {
-                Context.Sales.FromSql($@"dbo. {dir}");
                 var parameters = new SqlParameter[] {
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "folder", Value = dir, DbType = DbType.String },
                 };
-                Context.RunQuery<int>("dbo.backupInventoryDB", parameters);
+                Context.RunQuery<string>("dbo.backupInventoryDB", parameters);
                 return true;
             }
             catch (Exception ex)
@@ -689,27 +700,28 @@ namespace SistemaDeVentas
         {
             try
             {
+                var _rs = new Guid();
+                var rs = new Guid();
                 var parameters = new SqlParameter[] {
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "amount", Value = amount, DbType = DbType.String },
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "tax", Value = tax, DbType = DbType.String },
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "total", Value = total, DbType = DbType.String },
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "amount", Value = amount, DbType = DbType.Double },
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "tax", Value = tax, DbType = DbType.Double },
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "total", Value = total, DbType = DbType.Double },
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "notes", Value = notes, DbType = DbType.String },
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "payment_cash", Value = float.Parse(validNumber(payment_cash)), DbType = DbType.String },
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "payment_other", Value = float.Parse(validNumber(payment_other)), DbType = DbType.String },
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "change", Value = float.Parse(validNumber(change)), DbType = DbType.String },
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "userID", Value = userId, DbType = DbType.String },
-                    new SqlParameter() { Direction = ParameterDirection.Output, ParameterName = "saleID" },
-                    new SqlParameter() { Direction = ParameterDirection.Output, ParameterName = "ticket" }
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "payment_cash", Value = float.Parse(validNumber(payment_cash)), DbType = DbType.Double },
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "payment_other", Value = float.Parse(validNumber(payment_other)), DbType = DbType.Double },
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "change", Value = float.Parse(validNumber(change)), DbType = DbType.Double },
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "userID", Value = userId, DbType = DbType.Int16 },
+                    new SqlParameter() { Direction = ParameterDirection.Output, ParameterName = "saleID", Value = rs, DbType = DbType.Guid },
+                    new SqlParameter() { Direction = ParameterDirection.Output, ParameterName = "ticket", Value = ticket, DbType = DbType.Int64 }
                 };
 
-                var rs = new Guid();
-                var result = Context.RunQuery<string>("dbo.create_sale", parameters).ToList();
+                var result = Context.RunQuery<string>("dbo.create_sale", parameters, CommandType.StoredProcedure).ToList();
                 foreach(var data in result)
                 {
                     if(data != null)
                     {
-                        if(Guid.TryParse(data, out rs)){ }
-                        if (int.TryParse(data, out ticket)) { }
+                        if(Guid.TryParse(data, out _rs)){ rs = _rs; } 
+                        else if (int.TryParse(data, out ticket)) { }
                     }
                 }
                 return rs;
@@ -738,7 +750,7 @@ namespace SistemaDeVentas
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "userID", Value = userId, DbType = DbType.String },
                 };
 
-                Context.RunQuery<string>("dbo.create_sale", parameters);
+                Context.RunQuery<string>("dbo.create_detail", parameters);
 
                 return true;
             }
@@ -899,7 +911,6 @@ namespace SistemaDeVentas
         {
             try
             {
-                //FormattableString text = $"select isnull(value,'') as value from dbo.parameter with(nolock) where module = '{module}' and name = '{name}'";
                 return Context.Parameters.Where(i => i.Module == module && i.Name == name).Select(i => i.Value).SingleOrDefault();
             }
             catch (Exception ex)
@@ -910,7 +921,7 @@ namespace SistemaDeVentas
             }
         }
 
-        internal static List<string> getProductByBarcode(string code)
+        internal static List<string> getProductByBarcode(string code, bool isSales = false)
         {
             try
             {
@@ -923,6 +934,18 @@ namespace SistemaDeVentas
                                             REPLACE(REPLACE(REPLACE(p.exenta, Char(9), ''), Char(10), ''), Char(13), '') AS exenta 
                                             from dbo.product p with(nolock) inner join dbo.tax t with(nolock) on p.id_tax = t.id where p.state = 1 
                                             and p.bar_code='{code}'";
+                if (isSales)
+                {
+                    text = $@"select REPLACE(REPLACE(REPLACE(p.id, Char(9), ''), Char(10), ''), Char(13), '') AS id, 
+                                            REPLACE(REPLACE(REPLACE(p.name, Char(9), ''), Char(10), ''), Char(13), '') AS name, 
+                                            REPLACE(REPLACE(REPLACE(p.sale_price, Char(9), ''), Char(10), ''), Char(13), '') AS prise, 
+                                            REPLACE(REPLACE(REPLACE(p.amount, Char(9), ''), Char(10), ''), Char(13), '') AS amount, 
+                                            REPLACE(REPLACE(REPLACE(p.minimum, Char(9), ''), Char(10), ''), Char(13), '') AS minimum, 
+                                            REPLACE(REPLACE(REPLACE(replace(t.Text, '.',','), Char(9), ''), Char(10), ''), Char(13), '') AS tax, 
+                                            REPLACE(REPLACE(REPLACE(p.exenta, Char(9), ''), Char(10), ''), Char(13), '') AS exenta
+                                            from dbo.product p with(nolock) inner join dbo.tax t with(nolock) on p.id_tax = t.id inner join dbo.entries e with(nolock) ON e.id_product = p.id where p.state = 1 and e.state = 1
+                                            and p.bar_code='{code}'";
+                }
                 return Context.ReturnQuery<string>(text).ToList();
             }
             catch (Exception ex)
@@ -937,7 +960,7 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $@"select id, date, name, amount, tax, total, id_user, change, payment_cash, payment_other, ticket, note from dbo.sale with(nolock) where state = 1 and date>='{start}T00:00:00' and date<='{end}T23:59:59';";
+                FormattableString text = $@"select id, date, name, amount, tax, total, id_user, change, payment_cash, payment_other, ticket, note from dbo.sale with(nolock) where state = 1 and date>='{start}T00:00:00' and date<='{end}T23:59:59' order by date desc";
                 return Context.ExecReturnQuery(text).Result;
             }
             catch (Exception ex)
@@ -952,7 +975,7 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $"select * from dbo.detail with(nolock) where id_sale='{idSale}';";
+                FormattableString text = $"select * from dbo.detail with(nolock) where id_sale='{idSale}'";
                 return Context.ExecReturnQuery(text).Result;
             }
             catch (Exception ex)

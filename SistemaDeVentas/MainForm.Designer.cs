@@ -66,6 +66,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -235,14 +236,15 @@
             // stadisticsButton
             // 
             this.stadisticsButton.AutoEllipsis = true;
-            this.stadisticsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.stadisticsButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("stadisticsButton.BackgroundImage")));
+            this.stadisticsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.stadisticsButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.stadisticsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.stadisticsButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.stadisticsButton.Location = new System.Drawing.Point(1856, 132);
+            this.stadisticsButton.Location = new System.Drawing.Point(1901, 88);
             this.stadisticsButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.stadisticsButton.Name = "stadisticsButton";
-            this.stadisticsButton.Size = new System.Drawing.Size(366, 305);
+            this.stadisticsButton.Size = new System.Drawing.Size(283, 358);
             this.stadisticsButton.TabIndex = 5;
             this.stadisticsButton.Text = "Estadisticas";
             this.stadisticsButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -252,14 +254,15 @@
             // historicalButton
             // 
             this.historicalButton.AutoSize = true;
-            this.historicalButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.historicalButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("historicalButton.BackgroundImage")));
+            this.historicalButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.historicalButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.historicalButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.historicalButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.historicalButton.Location = new System.Drawing.Point(1398, 132);
+            this.historicalButton.Location = new System.Drawing.Point(1440, 79);
             this.historicalButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.historicalButton.Name = "historicalButton";
-            this.historicalButton.Size = new System.Drawing.Size(366, 305);
+            this.historicalButton.Size = new System.Drawing.Size(330, 367);
             this.historicalButton.TabIndex = 4;
             this.historicalButton.Text = "Historial";
             this.historicalButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -269,14 +272,15 @@
             // SalesButton
             // 
             this.SalesButton.AutoSize = true;
-            this.SalesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.SalesButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("SalesButton.BackgroundImage")));
+            this.SalesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.SalesButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.SalesButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.SalesButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.SalesButton.Location = new System.Drawing.Point(944, 132);
+            this.SalesButton.Location = new System.Drawing.Point(993, 79);
             this.SalesButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.SalesButton.Name = "SalesButton";
-            this.SalesButton.Size = new System.Drawing.Size(366, 314);
+            this.SalesButton.Size = new System.Drawing.Size(305, 367);
             this.SalesButton.TabIndex = 3;
             this.SalesButton.Text = "Ventas";
             this.SalesButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -286,14 +290,15 @@
             // PurchasesButton
             // 
             this.PurchasesButton.AutoSize = true;
-            this.PurchasesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.PurchasesButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("PurchasesButton.BackgroundImage")));
+            this.PurchasesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.PurchasesButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.PurchasesButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.PurchasesButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.PurchasesButton.Location = new System.Drawing.Point(494, 132);
+            this.PurchasesButton.Location = new System.Drawing.Point(539, 79);
             this.PurchasesButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.PurchasesButton.Name = "PurchasesButton";
-            this.PurchasesButton.Size = new System.Drawing.Size(370, 323);
+            this.PurchasesButton.Size = new System.Drawing.Size(315, 367);
             this.PurchasesButton.TabIndex = 1;
             this.PurchasesButton.Text = "Ingreso a Almacen";
             this.PurchasesButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -303,14 +308,15 @@
             // InventoryButton
             // 
             this.InventoryButton.AutoSize = true;
-            this.InventoryButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.InventoryButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("InventoryButton.BackgroundImage")));
+            this.InventoryButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.InventoryButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.InventoryButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.InventoryButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.InventoryButton.Location = new System.Drawing.Point(50, 132);
+            this.InventoryButton.Location = new System.Drawing.Point(104, 79);
             this.InventoryButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.InventoryButton.Name = "InventoryButton";
-            this.InventoryButton.Size = new System.Drawing.Size(366, 323);
+            this.InventoryButton.Size = new System.Drawing.Size(272, 367);
             this.InventoryButton.TabIndex = 0;
             this.InventoryButton.Text = "Inventario";
             this.InventoryButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;

@@ -20,31 +20,41 @@ namespace SistemaDeVentas
         private void InventoryButton_Click(object sender, EventArgs e)
         {
             Hide();
-            new InventoryForm().ShowDialog();
+            var form = new InventoryForm();
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
         }
 
         private void PurchasesButton_Click(object sender, EventArgs e)
         {
             Hide();
-            new PurchaseForm().ShowDialog();
+            var form = new PurchaseForm();
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
         }
 
         private void SalesButton_Click(object sender, EventArgs e)
         {
             Hide();
-            new SalesForm().ShowDialog();
+            var form = new SalesForm();
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
         }
 
         private void passwordMenuItem_Click(object sender, EventArgs e)
         {
             Hide();
-            new UserForm().ShowDialog();
+            var form = new UserForm();
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
         }
 
         private void stadisticsButton_Click(object sender, EventArgs e)
         {
             Hide();
-            new StadisticsForm().ShowDialog();
+            var form = new StadisticsForm();
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
@@ -79,25 +89,33 @@ namespace SistemaDeVentas
         private void historicalButton_Click(object sender, EventArgs e)
         {
             Hide();
-            new Historic().ShowDialog();
+            var form = new Historic();
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
         }
 
         private void newUserToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Hide();
-            new UserForm(NewUser: true).ShowDialog();
+            var form = new UserForm(NewUser: true);
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
         }
 
         private void compraVentaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Hide();
-            new InvoiceForm().ShowDialog();
+            var form = new InvoiceForm();
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
         }
 
         private void cambioDeUsuarioToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Hide();
-            new LoginForm().ShowDialog();
+            var form = new LoginForm();
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
         }
 
     }

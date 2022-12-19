@@ -31,10 +31,6 @@ namespace SistemaDeVentas
             DetailData.Columns.Add("tax");
             DetailData.Columns.Add("exenta");
             DetailDataGrid.Columns["id"].Visible = false;
-            DetailDataGrid.Columns["name"].Width = 600;
-            DetailDataGrid.Columns["price"].Width = 150;
-            DetailDataGrid.Columns["amount"].Width = 150;
-            DetailDataGrid.Columns["total"].Width = 200;
             DetailDataGrid.Columns["tax"].Visible = false;
             DetailDataGrid.Columns["exenta"].Visible = false;
             DetailDataGrid.Columns["name"].HeaderText = "Nombre del Producto";
@@ -45,6 +41,20 @@ namespace SistemaDeVentas
             DetailDataGrid.Columns["total"].DefaultCellStyle.Format = "C";
             DetailDataGrid.Columns["price"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
             DetailDataGrid.Columns["total"].DefaultCellStyle.FormatProvider = ConDB.getCultureInfo();
+            // Now that DataGridView has calculated it's Widths; we can now store each column Width values.
+            for (int i = 0; i <= DetailDataGrid.Columns.Count - 1; i++)
+            {
+                // Store Auto Sized Widths:
+                int colw = DetailDataGrid.Columns[i].Width;
+                // Remove AutoSizing:
+                DetailDataGrid.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                // Set Width to calculated AutoSize value:
+                DetailDataGrid.Columns[i].Width = colw;
+            }
+            DetailDataGrid.Columns["name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            DetailDataGrid.Columns["price"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DetailDataGrid.Columns["amount"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DetailDataGrid.Columns["total"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
         }
 
         public void AddDetails(DataTable detailData)

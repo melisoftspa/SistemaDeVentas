@@ -1,7 +1,9 @@
-﻿using System.Data;
+﻿using System.ComponentModel;
+using System.Data;
 using System.Reflection;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using SistemaDeVentas.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -26,7 +28,6 @@ namespace SistemaDeVentas.Data
                 var table = new DataTable();
                 table.Load(result);
                 // returning DataTable (instead of DbDataReader), cause can't use DbDataReader after CloseConnection().
-                //this.Database.CloseConnection();
                 if (command.Connection.State.Equals(ConnectionState.Open)) { command.Connection.Close(); }
                 return table;
             }
@@ -46,7 +47,7 @@ namespace SistemaDeVentas.Data
                     {
                         dataList.Add((T)reader[i]);
                     }
-                }                
+                }
                 if (command.Connection.State.Equals(ConnectionState.Open)) { command.Connection.Close(); }
             }
             return dataList;
@@ -59,39 +60,27 @@ namespace SistemaDeVentas.Data
         /// <param name="query"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public List<T> RunQuery<T>(string query, SqlParameter[] parameters)
+        public List<T> RunQuery<T>(string query, SqlParameter[] parameters, CommandType commandType = CommandType.StoredProcedure)
         {
             var entities = new List<T>();
             using (var command = this.Database.GetDbConnection().CreateCommand())
             {
-                //this.Database.OpenConnection();
                 command.CommandText = query;
-                command.CommandType = CommandType.StoredProcedure;
+                command.CommandType = commandType;
                 command.Parameters.AddRange(parameters);
                 if (command.Connection.State.Equals(ConnectionState.Closed)) { command.Connection.Open(); }
-                command.ExecuteNonQuery();                
-                using var reader = command.ExecuteReaderAsync().Result;
+                using var reader = command.ExecuteReader();
                 var properties = typeof(T).GetProperties();
-                while (reader.Read())
-                {
-                    var t = Activator.CreateInstance<T>();
-                    foreach (var property in typeof(T).GetProperties())
-                    {
-                        if (!reader.IsDBNull(reader.GetOrdinal(property.Name)))
-                        {
-                            Type convertTo = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                            property.SetValue(t, Convert.ChangeType(reader[property.Name], convertTo), null);
-                        }
-                    }
-                }
                 var param = parameters.Where(i => i.Direction == ParameterDirection.Output);
-                if(param.Count() > 0)
+                if (param.Count() > 0)
                 {
-                    foreach(var data in param)
+                    foreach (var data in param)
                     {
-                        entities.Add((T)data.Value);
+                        T newT1 = (T)(object)data.Value.ToString();
+                        entities.Add(newT1);
                     }
                 }
+
                 if (command.Connection.State.Equals(ConnectionState.Open)) { command.Connection.Close(); }
             }
             return entities;
