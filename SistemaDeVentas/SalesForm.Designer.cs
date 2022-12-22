@@ -946,6 +946,7 @@
             this.Controls.Add(this.filterTextBox);
             this.Controls.Add(this.InventoryDataGrid);
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.Name = "SalesForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

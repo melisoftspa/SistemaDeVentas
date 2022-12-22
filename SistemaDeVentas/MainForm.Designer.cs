@@ -340,6 +340,7 @@
             this.Controls.Add(this.PurchasesButton);
             this.Controls.Add(this.InventoryButton);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.Name = "MainForm";

@@ -81,8 +81,9 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $@"SELECT (isnull(sum(payment_cash),0) - isnull(sum(change),0)) + (select isnull(sum(total),0) from dbo.sale with(nolock) where state = 1 and payment_cash = 0 and payment_other = 0 and date >='{start}T00:00:00' and date <='{end}T23:59:59') from dbo.sale with(nolock) where state = 1 and date >='{start}T00:00:00' and date <='{end}T23:59:59';";
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().Replace('.', ','));
+                string sql = $@"SELECT (isnull(sum(payment_cash),0) - isnull(sum(change),0)) + (select isnull(sum(total),0) from dbo.sale with(nolock) where state = 1 and payment_cash = 0 and payment_other = 0 and date >='{start}T00:00:00' and date <='{end}T23:59:59') as Value from dbo.sale with(nolock) where state = 1 and date >='{start}T00:00:00' and date <='{end}T23:59:59'";
+                FormattableString text = $"{sql}";
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString().Replace('.', ','));
             }
             catch (Exception ex)
             {
@@ -111,8 +112,9 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $@"select isnull(sum(payment_other),0) from dbo.sale with(nolock) where state = 1 and date >='{start}T00:00:00' and date <='{end}T23:59:59';";
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().Replace('.', ','));
+                string sql = $@"select isnull(sum(payment_other),0) from dbo.sale with(nolock) where state = 1 and date >='{start}T00:00:00' and date <='{end}T23:59:59'";
+                FormattableString text = $"{sql}";
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString().Replace('.', ','));
             }
             catch (Exception ex)
             {
@@ -220,8 +222,9 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $@"select isnull(sum(d.total),0) from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and p.exenta = 1 and s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59';";
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().Replace('.', ','));
+                string sql = $@"select isnull(sum(d.total),0) as Value from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and p.exenta = 1 and s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59'";
+                FormattableString text = $"{sql}";
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString().Replace('.', ','));
             }
             catch (Exception ex)
             {
@@ -235,8 +238,9 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $@"select isnull(sum(d.total),0) + (select isnull(sum(d.total),0) from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and p.exenta is null and s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59') from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and p.exenta = 0 and s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59';";
-                float num = float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().Replace('.', ','));
+                string sql = $@"select isnull(sum(d.total),0) + (select isnull(sum(d.total),0) from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and p.exenta is null and s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59') as Value from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and p.exenta = 0 and s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59'";
+                FormattableString text = $"{sql}";
+                float num = float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString().Replace('.', ','));
                 if (profit)
                 {
                     num -= getTotalSalesExenta(start, end);
@@ -255,8 +259,9 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $@"select isnull(sum(d.total),0) from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59' and p.id_category = '{id}';";
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().Replace('.', ','));
+                string sql = $@"select isnull(sum(d.total),0) from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59' and p.id_category = '{id}'";
+                FormattableString text = $"{sql}";
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString().Replace('.', ','));
             }
             catch (Exception ex)
             {
@@ -270,7 +275,7 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $@"select sc.text, isnull(SUM(d.total),0) as total from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product left join subcategory sc on sc.id = p.id_subcategory where s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59' and sc.id_category = '{id}' group by sc.text, sc.id_category;";
+                FormattableString text = $@"select sc.text, isnull(SUM(d.total),0) as total from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product left join subcategory sc on sc.id = p.id_subcategory where s.date >='{start}T00:00:00' and s.date <='{end}T23:59:59' and sc.id_category = '{id}' group by sc.text, sc.id_category";
                 return Context.ExecReturnQuery(text).Result;
             }
             catch (Exception ex)
@@ -998,8 +1003,8 @@ namespace SistemaDeVentas
                 {
                     end = DateTime.Now.Date.ToString("yyyy-MM-dd");
                 }
-                FormattableString text = ((userid <= 0) ? ((FormattableString)$"select isnull(sum(d.total),0) from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and s.date>='{start}T00:00:00' and s.date<='{end}T23:59:59';") : ($"select isnull(sum(d.total),0) from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and s.date>='{start}T00:00:00' and s.date<='{end}T23:59:59' and id_user = {userid};"));
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().Replace('.', ','));
+                FormattableString text = ((userid <= 0) ? ((FormattableString)$"select isnull(sum(d.total),0) as Value from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and s.date>='{start}T00:00:00' and s.date<='{end}T23:59:59'") : ($"select isnull(sum(d.total),0) as Value from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and s.date>='{start}T00:00:00' and s.date<='{end}T23:59:59' and id_user = {userid}"));
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString().Replace('.', ','));
             }
             catch (Exception ex)
             {
@@ -1013,8 +1018,8 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $@"select isnull(sum(d.total_tax),0) from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and p.exenta = 0 and s.date>='{start}T00:00:00' and s.date<='{end}T23:59:59';";
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().Replace('.', ','));
+                FormattableString text = $@"select isnull(sum(d.total_tax),0) as Value from sale s inner join detail d on s.id = d.id_sale left join product p on p.id = d.id_product where s.state = 1 and d.state = 1 and p.exenta = 0 and s.date>='{start}T00:00:00' and s.date<='{end}T23:59:59'";
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString().Replace('.', ','));
             }
             catch (Exception ex)
             {
@@ -1036,8 +1041,9 @@ namespace SistemaDeVentas
                 {
                     end = DateTime.Now.Date.ToString("yyyy-MM-dd");
                 }
-                FormattableString text = ((userid <= 0) ? (FormattableString)($"select count(1) from dbo.sale with(nolock) where state = 1 and date >='{start}T00:00:00' and date <='{end}T23:59:59';") : $"select count(1) from dbo.sale with(nolock) where state = 1 and date >='{start}T00:00:00' and date <='{end}T23:59:59' and id_user = {userid};");
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().Replace('.', ','));
+                string sql = ((userid <= 0) ?  ($"select count(1) as Value from dbo.sale with(nolock) where state = 1 and date >='{start}T00:00:00' and date <='{end}T23:59:59'") : $"select count(1) as Value from dbo.sale with(nolock) where state = 1 and date >='{start}T00:00:00' and date <='{end}T23:59:59' and id_user = {userid}");
+                FormattableString text = $"{sql}";
+                return float.Parse(Context.ReturnQuery<int>(text).FirstOrDefault().ToString().Replace('.', ','));
             }
             catch (Exception ex)
             {
@@ -1051,7 +1057,7 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $"select * from dbo.entries with(nolock) where date>='{start}T00:00:00' and date<='{end}T23:59:59';";
+                FormattableString text = $"select * from dbo.entries with(nolock) where date>='{start}T00:00:00' and date<='{end}T23:59:59'";
                 return Context.ExecReturnQuery(text).Result;
             }
             catch (Exception ex)
@@ -1083,8 +1089,8 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $"SELECT isnull(SUM(amount * price),0) from product with(nolock) where 1 = 1 and state = 1";
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().ToString());
+                FormattableString text = $"SELECT isnull(SUM(amount * price),0) as total from product with(nolock) where 1 = 1 and state = 1";
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString().ToString());
             }
             catch (Exception ex)
             {
@@ -1098,8 +1104,8 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $"SELECT isnull(SUM(amount * sale_price),0) from product with(nolock) where 1 = 1 and state = 1";
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault());
+                FormattableString text = $"SELECT isnull(SUM(amount * sale_price),0) as total from product with(nolock) where 1 = 1 and state = 1";
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString());
             }
             catch (Exception ex)
             {
@@ -1113,8 +1119,8 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $"SELECT isnull(SUM((stock - amount) * sale_price),0) from product with(nolock) where 1 = 1 and state = 1";
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault());
+                FormattableString text = $"SELECT isnull(SUM((stock - amount) * sale_price),0) as total from product with(nolock) where 1 = 1 and state = 1";
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString());
             }
             catch (Exception ex)
             {
@@ -1128,7 +1134,7 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $"select * from dbo.historical with(nolock) where date>='{start}T00:00:00' and date<='{end}T23:59:59';";
+                FormattableString text = $"select * from dbo.historical with(nolock) where date>='{start}T00:00:00' and date<='{end}T23:59:59'";
                 return Context.ExecReturnQuery(text).Result;
             }
             catch (Exception ex)
@@ -1143,8 +1149,8 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $"select isnull(sum(total),0) from dbo.entries with(nolock) where date>='{start}T00:00:00' and date<='{end}T23:59:59';";
-                return float.Parse(Context.Database.SqlQuery<string>(text).FirstOrDefault().Replace('.', ','));
+                FormattableString text = $"select isnull(sum(total),0) as total from dbo.entries with(nolock) where date>='{start}T00:00:00' and date<='{end}T23:59:59'";
+                return float.Parse(Context.ReturnQuery<double>(text).FirstOrDefault().ToString().Replace('.', ','));
             }
             catch (Exception ex)
             {
@@ -1158,7 +1164,7 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $"select p.id as id, p.name, sum(ISNULL(d.amount,0)) as amount, sum(ISNULL(d.total,0)) as total from dbo.product p left join dbo.detail d on p.id = d.id_product where 1=1 and p.state = 1 group by p.id, p.name;";
+                FormattableString text = $"select p.id as id, p.name, sum(ISNULL(d.amount,0)) as amount, sum(ISNULL(d.total,0)) as total from dbo.product p left join dbo.detail d on p.id = d.id_product where 1=1 and p.state = 1 group by p.id, p.name";
                 return Context.ExecReturnQuery(text).Result;
             }
             catch (Exception ex)

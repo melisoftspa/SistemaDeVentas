@@ -11,6 +11,11 @@
     <NeutralLanguage>es-CL</NeutralLanguage>
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>tienda.ico</ApplicationIcon>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<Version>1.2.0</Version>
+	<Authors>Juan Pablo Melinao González</Authors>
+	<Company>MeliSoft SpA</Company>
+	  <PackageId>POSChile</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

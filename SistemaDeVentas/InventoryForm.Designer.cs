@@ -664,7 +664,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-            this.tabPage2.Size = new System.Drawing.Size(918, 1219);
+            this.tabPage2.Size = new System.Drawing.Size(918, 1015);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Armar Pack";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -776,7 +776,7 @@
             this.DetailsPackDatagrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.DetailsPackDatagrid.RowHeadersVisible = false;
             this.DetailsPackDatagrid.RowHeadersWidth = 72;
-            this.DetailsPackDatagrid.Size = new System.Drawing.Size(833, 882);
+            this.DetailsPackDatagrid.Size = new System.Drawing.Size(833, 678);
             this.DetailsPackDatagrid.TabIndex = 29;
             this.DetailsPackDatagrid.TabStop = false;
             this.DetailsPackDatagrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DetailsPackDatagrid_CellClick);
@@ -822,6 +822,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.filterTextBox);
             this.Controls.Add(this.InventoryDataGrid);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.Name = "InventoryForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

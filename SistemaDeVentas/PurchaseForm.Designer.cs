@@ -348,6 +348,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.filterTextBox);
             this.Controls.Add(this.InventoryDataGrid);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.Name = "PurchaseForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

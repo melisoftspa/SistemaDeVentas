@@ -9,7 +9,7 @@
   <Identity
     Name="ce674773-9ddd-43da-a167-a7d0cf93c4ec"
     Publisher="CN=jmeli"
-    Version="1.0.0.0" />
+    Version="1.2.2.0" />
 
   <Properties>
     <DisplayName>SistemaDeVentasInstaller</DisplayName>
