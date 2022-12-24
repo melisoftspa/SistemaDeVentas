@@ -542,11 +542,11 @@ namespace SistemaDeVentas
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "expiration", Value = expiration.ToShortDateString(), DbType = DbType.DateTime },
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "category", Value = category, DbType = DbType.String },
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "isPack", Value = isPack, DbType = DbType.Boolean },
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "id_pack", Value = idpack, DbType = DbType.String},
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "idPack", Value = idpack, DbType = DbType.String},
                     new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "idsubcategory", Value = idsubcategory, DbType = DbType.String},
                     new SqlParameter() { Direction = ParameterDirection.Output, ParameterName = "res", Value = num },
                 };
-                num = Context.RunQuery<int>("dbo.create_product", parameters).FirstOrDefault();
+                num = int.Parse(Context.RunQuery<string>("dbo.create_product", parameters).FirstOrDefault());
 
                 return num == 1;
             }
