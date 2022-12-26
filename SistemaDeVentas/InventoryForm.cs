@@ -134,10 +134,11 @@ namespace SistemaDeVentas
 
         private void InventoryDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == -1)
+            if (e.RowIndex == -1 || e.RowIndex >= InventoryDataGrid.RowCount)
             {
                 return;
             }
+
             row_selected_id = InventoryDataGrid.Rows[e.RowIndex].Cells["id"].FormattedValue.ToString();
             string text = InventoryDataGrid.Rows[e.RowIndex].Cells["name"].FormattedValue.ToString();
             string text2 = InventoryDataGrid.Rows[e.RowIndex].Cells["amount"].FormattedValue.ToString();
@@ -188,7 +189,10 @@ namespace SistemaDeVentas
             }
             if (string.IsNullOrEmpty(current_idsubcategory))
             {
-                subcategory_combobox.SelectedIndex = 0;
+                if (subcategory_combobox.Items.Count > 0)
+                {
+                    subcategory_combobox.SelectedIndex = 0;
+                }
             }
             else
             {
@@ -214,6 +218,7 @@ namespace SistemaDeVentas
         private void cleanButton_Click(object sender, EventArgs e)
         {
             clean();
+            filterTextBox.Focus();
         }
 
         private void clean()

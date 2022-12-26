@@ -419,7 +419,7 @@ namespace SistemaDeVentas
                     {
                         text += "and dbo.product.sale_price is not null and dbo.product.sale_price > 0 ";
                     }
-                    text = ((!isInventory) ? (text + "and dbo.product.state = 1 and dbo.product.amount >= dbo.product.minimum;") : (text + "and dbo.product.state = 1 "));
+                    text = ((!isInventory) ? (text + "and dbo.product.state = 1 and dbo.product.amount >= dbo.product.minimum ORDER BY product.name ASC") : (text + "and dbo.product.state = 1 "));
                 }
                 else
                 {
@@ -431,15 +431,10 @@ namespace SistemaDeVentas
                     {
                         text += "and dbo.product.amount >= dbo.product.minimum ";
                     }
-                    text += text + $"and dbo.product.state = 1 and (coalesce(convert(nvarchar(max), dbo.product.name), '') + coalesce(convert(varchar(max), dbo.product.amount), '') + coalesce(convert(varchar(max), dbo.product.sale_price), '') + coalesce(convert(varchar(max), dbo.product.minimum), '') + coalesce(convert(varchar(max), dbo.product.bar_code), '') + coalesce(convert(varchar(max), dbo.product.stock), '') + coalesce(convert(varchar(max), dbo.product.price), '') + coalesce(convert(varchar(max), dbo.product.line), '') ) like '%{word}%';";
+                    text += text + $"and dbo.product.state = 1 and (coalesce(convert(nvarchar(max), dbo.product.name), '') + coalesce(convert(varchar(max), dbo.product.amount), '') + coalesce(convert(varchar(max), dbo.product.sale_price), '') + coalesce(convert(varchar(max), dbo.product.minimum), '') + coalesce(convert(varchar(max), dbo.product.bar_code), '') + coalesce(convert(varchar(max), dbo.product.stock), '') + coalesce(convert(varchar(max), dbo.product.price), '') + coalesce(convert(varchar(max), dbo.product.line), '') ) like '%{word}%' ORDER BY product.name ASC";
                 }
                 FormattableString query = $@"{text}";
-                DataTable dataTable = Context.ExecReturnQuery(query).Result;
-                Dictionary<string, string> dictionary = new Dictionary<string, string>();
-                dictionary.Add("name", "asc");
-                dataTable.DefaultView.Sort = string.Join(",", dictionary.Select((KeyValuePair<string, string> x) => x.Key + " " + x.Value).ToArray());
-                dataTable = dataTable.DefaultView.ToTable();
-                
+                DataTable dataTable = Context.ExecReturnQuery(query).Result;                
                 DataColumn dcRowString = dataTable.Columns.Add("_RowString", typeof(string));
                 foreach (DataRow row in dataTable.Rows)
                 {

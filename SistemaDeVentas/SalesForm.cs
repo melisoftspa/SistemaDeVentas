@@ -420,10 +420,10 @@ namespace SistemaDeVentas
 
         internal void ClearFinishSale()
         {
+            InventoryDataGrid.DataSource = ConDB.getProductsList("", isSales: true);
             detailsDataTable.Clear();
             cleanfields();
             EnabledProcessButton(active: false);
-            InventoryDataGrid.DataSource = ConDB.getProductsList(isSales: true);
             setProductsGridFormat();
             barcode_input.Focus();
             vendor_label.Text = string.Format(_welcome, ConDB.userName, ConDB.getTotalInvoiceSales("", "", ConDB.userId), ConDB.getTotalSales("", "", ConDB.userId).ToString("c"));
@@ -1362,7 +1362,7 @@ namespace SistemaDeVentas
         {
             filter_word = ConDB.validString(filterTextBox.Text.Trim());
             if (string.IsNullOrEmpty(filter_word)) {
-                InventoryDataGrid.DataSource = _fullInventary;
+                InventoryDataGrid.DataSource = ConDB.getProductsList("", isSales: true);
             } else {
                 (InventoryDataGrid.DataSource as DataTable).DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
 

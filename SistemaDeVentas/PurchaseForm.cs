@@ -23,7 +23,7 @@ namespace SistemaDeVentas
         public PurchaseForm()
         {
             InitializeComponent();
-            InventoryDataGrid.DataSource = ConDB.getProductsList(isPurchase: true);
+            InventoryDataGrid.DataSource = ConDB.getProductsList("", isPurchase: true);
             formatDataGrid();
             DeleteButton.Visible = false;
         }
@@ -74,14 +74,15 @@ namespace SistemaDeVentas
 
         private void clean()
         {
+            _fullInventary = ConDB.getProductsList("", isPurchase: true);
             name_input.Text = string.Empty;
             amount_input.Text = "0,0";
             price_input.Text = "0,0";
             filterTextBox.Text = string.Empty;
             barcode_input.Text = string.Empty;
             barcode_input.Focus();
-            _fullInventary = ConDB.getProductsList(filter_word);
             InventoryDataGrid.DataSource = _fullInventary;
+            formatDataGrid();
         }
 
         private void InventoryDataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -151,7 +152,7 @@ namespace SistemaDeVentas
                     name_input.Text = filter_word;
                     price_input.Text = productByBarcode[2];
                     amount_input.Text = productByBarcode[3];
-                    InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word);
+                    InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word, isPurchase: true);
                     formatDataGrid();
                 }
             }
@@ -178,7 +179,7 @@ namespace SistemaDeVentas
         private void PurchaseForm_Load(object sender, EventArgs e)
         {
             barcode_input.Focus();
-            _fullInventary = ConDB.getProductsList(filter_word);
+            _fullInventary = ConDB.getProductsList("", isPurchase: true);
         }
 
         private void filterTextBox_TextChanged(object sender, EventArgs e)
