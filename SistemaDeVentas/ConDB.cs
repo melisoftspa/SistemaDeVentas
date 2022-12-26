@@ -851,7 +851,7 @@ namespace SistemaDeVentas
         {
             try
             {
-                FormattableString text = $"select d.amount, d.product_name as name, d.total, d.price from sale s inner join detail d on s.id = d.id_sale where s.ticket = {current_invoice_nroTicket}";
+                FormattableString text = $"select d.amount, d.product_name as name, d.total, d.price, s.payment_cash, s.payment_other, s.change, s.total as total_sales, s.tax from sale s inner join detail d on s.id = d.id_sale where s.ticket = {current_invoice_nroTicket}";
                 return Context.ExecReturnQuery(text).Result;
             }
             catch (Exception ex)

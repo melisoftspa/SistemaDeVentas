@@ -191,7 +191,7 @@
             this.InventoryDataGrid.ReadOnly = true;
             this.InventoryDataGrid.RowHeadersVisible = false;
             this.InventoryDataGrid.RowHeadersWidth = 72;
-            this.InventoryDataGrid.Size = new System.Drawing.Size(876, 1146);
+            this.InventoryDataGrid.Size = new System.Drawing.Size(876, 1036);
             this.InventoryDataGrid.TabIndex = 31;
             this.InventoryDataGrid.TabStop = false;
             this.InventoryDataGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.InventoryDataGrid_CellClick);
@@ -353,8 +353,7 @@
             this.DetailDataGrid.AllowUserToDeleteRows = false;
             this.DetailDataGrid.AllowUserToResizeColumns = false;
             this.DetailDataGrid.AllowUserToResizeRows = false;
-            this.DetailDataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DetailDataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.DetailDataGrid.BackgroundColor = System.Drawing.Color.White;
             this.DetailDataGrid.ColumnHeadersHeight = 40;
             this.DetailDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
@@ -371,7 +370,7 @@
             this.DetailDataGrid.RowHeadersVisible = false;
             this.DetailDataGrid.RowHeadersWidth = 72;
             this.DetailDataGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.DetailDataGrid.Size = new System.Drawing.Size(1066, 461);
+            this.DetailDataGrid.Size = new System.Drawing.Size(1066, 348);
             this.DetailDataGrid.TabIndex = 30;
             this.DetailDataGrid.TabStop = false;
             this.DetailDataGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DetailDataGrid_CellClick);
@@ -431,11 +430,11 @@
             // 
             // label9
             // 
-            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label9.ForeColor = System.Drawing.Color.Tomato;
-            this.label9.Location = new System.Drawing.Point(1596, 1078);
+            this.label9.Location = new System.Drawing.Point(1596, 964);
             this.label9.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(92, 32);
@@ -444,11 +443,11 @@
             // 
             // totalSale_input
             // 
-            this.totalSale_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.totalSale_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.totalSale_input.BackColor = System.Drawing.Color.Blue;
             this.totalSale_input.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.totalSale_input.ForeColor = System.Drawing.Color.White;
-            this.totalSale_input.Location = new System.Drawing.Point(1710, 1057);
+            this.totalSale_input.Location = new System.Drawing.Point(1710, 943);
             this.totalSale_input.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.totalSale_input.Name = "totalSale_input";
             this.totalSale_input.ReadOnly = true;
@@ -460,14 +459,14 @@
             // 
             // processButton
             // 
-            this.processButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.processButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.processButton.BackColor = System.Drawing.Color.Gainsboro;
             this.processButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("processButton.BackgroundImage")));
             this.processButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.processButton.Enabled = false;
             this.processButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.processButton.ForeColor = System.Drawing.Color.White;
-            this.processButton.Location = new System.Drawing.Point(1854, 1260);
+            this.processButton.Location = new System.Drawing.Point(1854, 1142);
             this.processButton.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.processButton.Name = "processButton";
             this.processButton.Size = new System.Drawing.Size(113, 118);
@@ -510,11 +509,11 @@
             // 
             // change_input
             // 
-            this.change_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.change_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.change_input.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.change_input.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.change_input.ForeColor = System.Drawing.Color.White;
-            this.change_input.Location = new System.Drawing.Point(1710, 1126);
+            this.change_input.Location = new System.Drawing.Point(1710, 1012);
             this.change_input.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.change_input.Name = "change_input";
             this.change_input.ReadOnly = true;
@@ -526,11 +525,11 @@
             // 
             // label11
             // 
-            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label11.ForeColor = System.Drawing.Color.Tomato;
-            this.label11.Location = new System.Drawing.Point(1585, 1137);
+            this.label11.Location = new System.Drawing.Point(1585, 1023);
             this.label11.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(111, 32);
@@ -539,9 +538,9 @@
             // 
             // payment_cash_input
             // 
-            this.payment_cash_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.payment_cash_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.payment_cash_input.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.payment_cash_input.Location = new System.Drawing.Point(1242, 1126);
+            this.payment_cash_input.Location = new System.Drawing.Point(1242, 1012);
             this.payment_cash_input.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.payment_cash_input.Name = "payment_cash_input";
             this.payment_cash_input.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -556,11 +555,11 @@
             // 
             // label12
             // 
-            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label12.ForeColor = System.Drawing.Color.Tomato;
-            this.label12.Location = new System.Drawing.Point(922, 1147);
+            this.label12.Location = new System.Drawing.Point(922, 1033);
             this.label12.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(273, 32);
@@ -570,9 +569,9 @@
             // 
             // payment_other_input
             // 
-            this.payment_other_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.payment_other_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.payment_other_input.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.payment_other_input.Location = new System.Drawing.Point(1242, 1057);
+            this.payment_other_input.Location = new System.Drawing.Point(1242, 943);
             this.payment_other_input.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.payment_other_input.Name = "payment_other_input";
             this.payment_other_input.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -587,11 +586,11 @@
             // 
             // label13
             // 
-            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label13.ForeColor = System.Drawing.Color.Tomato;
-            this.label13.Location = new System.Drawing.Point(922, 1078);
+            this.label13.Location = new System.Drawing.Point(922, 964);
             this.label13.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(259, 32);
@@ -601,10 +600,10 @@
             // 
             // notes_input
             // 
-            this.notes_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.notes_input.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.notes_input.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.notes_input.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.notes_input.Location = new System.Drawing.Point(1206, 1199);
+            this.notes_input.Location = new System.Drawing.Point(1206, 1085);
             this.notes_input.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.notes_input.Multiline = true;
             this.notes_input.Name = "notes_input";
@@ -613,11 +612,11 @@
             // 
             // label14
             // 
-            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label14.ForeColor = System.Drawing.Color.Tomato;
-            this.label14.Location = new System.Drawing.Point(922, 1230);
+            this.label14.Location = new System.Drawing.Point(922, 1116);
             this.label14.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(279, 100);
@@ -684,14 +683,14 @@
             // 
             // processButton2
             // 
-            this.processButton2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.processButton2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.processButton2.BackColor = System.Drawing.Color.Gainsboro;
             this.processButton2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("processButton2.BackgroundImage")));
             this.processButton2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.processButton2.Enabled = false;
             this.processButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.processButton2.ForeColor = System.Drawing.Color.White;
-            this.processButton2.Location = new System.Drawing.Point(1651, 1260);
+            this.processButton2.Location = new System.Drawing.Point(1651, 1146);
             this.processButton2.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.processButton2.Name = "processButton2";
             this.processButton2.Size = new System.Drawing.Size(117, 110);
@@ -713,11 +712,11 @@
             // 
             // label16
             // 
-            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label16.ForeColor = System.Drawing.Color.Tomato;
-            this.label16.Location = new System.Drawing.Point(1631, 1193);
+            this.label16.Location = new System.Drawing.Point(1631, 1079);
             this.label16.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label16.MaximumSize = new System.Drawing.Size(159, 0);
             this.label16.Name = "label16";
@@ -729,11 +728,11 @@
             // 
             // label17
             // 
-            this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label17.ForeColor = System.Drawing.Color.Tomato;
-            this.label17.Location = new System.Drawing.Point(1830, 1193);
+            this.label17.Location = new System.Drawing.Point(1830, 1079);
             this.label17.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label17.MaximumSize = new System.Drawing.Size(159, 0);
             this.label17.Name = "label17";
@@ -796,6 +795,8 @@
             // 
             // timer_label
             // 
+            this.timer_label.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.timer_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.timer_label.Location = new System.Drawing.Point(682, 54);
             this.timer_label.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
@@ -866,7 +867,8 @@
             // 
             // label19
             // 
-            this.label19.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label19.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label19.ForeColor = System.Drawing.Color.Tomato;
@@ -880,7 +882,8 @@
             // 
             // label20
             // 
-            this.label20.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label20.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label20.ForeColor = System.Drawing.Color.Tomato;
@@ -897,7 +900,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(2016, 1404);
+            this.ClientSize = new System.Drawing.Size(2016, 1284);
             this.Controls.Add(this.label20);
             this.Controls.Add(this.label19);
             this.Controls.Add(this.lblStockMax);

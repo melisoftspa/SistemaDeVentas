@@ -1130,7 +1130,10 @@ namespace SistemaDeVentas
                 {
                     if (invoice)
                     {
-                        PrintInvoice();
+                        this.BeginInvoke(new MethodInvoker(delegate
+                        {
+                            PrintInvoice();
+                        }));                        
                     }
                 }
                 catch (Exception ex)
@@ -1147,12 +1150,16 @@ namespace SistemaDeVentas
         {
             Ticket ticket = new();
             DataTable dataTable;
-            if (string.IsNullOrEmpty(nroTicket))
+
+            if (!string.IsNullOrEmpty(nroTicket))
             {
-                dataTable = ConDB.Current_invoice_details(current_invoice_nroTicket);
-            } else
+                current_invoice_nroTicket = int.Parse(nroTicket);
+            }
+            dataTable = ConDB.Current_invoice_details(current_invoice_nroTicket);
+
+            if (!string.IsNullOrEmpty(nroTicket))
             {
-                dataTable = ConDB.Current_invoice_details(int.Parse(nroTicket));
+                detailsDataTable = dataTable;
             }
             try
             {
@@ -1173,8 +1180,8 @@ namespace SistemaDeVentas
                 };
 
                 // encode barcode data
-                Encoder.Encode(text);
-                ticket.HeaderImage = Encoder.CreateBarcodeBitmap();                
+                //Encoder.Encode(text);
+                //ticket.HeaderImage = Encoder.CreateBarcodeBitmap();                
             }
             catch (Exception ex)
             {
@@ -1182,6 +1189,7 @@ namespace SistemaDeVentas
                 //Bitmap headerImage2 = new Bitmap(Resources.barcode);
                 //ticket.HeaderImage = headerImage2;
             }
+            
             ticket.AddHeaderLine("DETALLE DE COMPRA");
             ticket.AddHeaderLine("");
             foreach (string dataHeadPo in ConDB.getDataHeadPos())
@@ -1194,9 +1202,15 @@ namespace SistemaDeVentas
             }
             ticket.AddSubHeaderLine($"NOTA DE PEDIDO NRO#: {current_invoice_nroTicket}");
             ticket.AddSubHeaderLine("FECHA: " + DateTime.Now.ToShortDateString() + "       HORA: " + DateTime.Now.ToShortTimeString());
+            float totalAcumulado = 0;
             for (int j = 0; j < dataTable.Rows.Count; j++)
             {
                 ticket.AddItem(string.Format("{0:C0}", dataTable.Rows[j]["amount"]).Replace(",00", "").Replace("$", ""), string.Format("{0} ({1} C/U)", dataTable.Rows[j]["name"].ToString().ToUpper(), float.Parse(dataTable.Rows[j]["price"].ToString()).ToString("C").Replace(",00", "")), string.Format("{0:C0}", dataTable.Rows[j]["total"]).Replace(",00", ""));
+                current_invoice_totalInvoice = float.Parse(dataTable.Rows[j]["total_sales"].ToString());
+                cuurent_invoice_payment_cash = dataTable.Rows[j]["payment_cash"].ToString();
+                current_invoice_payment_other = dataTable.Rows[j]["payment_other"].ToString();
+                current_invoice_change = dataTable.Rows[j]["change"].ToString();
+                current_invoice_taxInvoice = float.Parse(dataTable.Rows[j]["tax"].ToString());
             }
             ticket.AddTotal("TOTAL", $"{current_invoice_totalInvoice:C0}".Replace(",00", ""));
             ticket.AddTotal("", "");
@@ -1206,7 +1220,7 @@ namespace SistemaDeVentas
             ticket.AddTotal("", "");
             if (current_invoice_taxInvoice > 0f)
             {
-                ticket.AddFooterLine("EL IVA DE ESTA BOLETA ES: " + $"{current_invoice_taxInvoice:C0}".Replace(",00", ""));
+                ticket.AddFooterLine("EL IVA DE ESTA COMPRA ES: " + $"{current_invoice_taxInvoice:C0}".Replace(",00", ""));
             }
             ticket.AddFooterLine("");
             ticket.AddFooterLine("VUELVA PRONTO");
@@ -1260,9 +1274,12 @@ namespace SistemaDeVentas
 
         private void reprint_button_Click(object sender, EventArgs e)
         {
-            if (current_invoice_nroTicket > 0)
+            if (current_invoice_nroTicket > 0 || int.Parse(ticket_input.Text) > 0)
             {
-                PrintInvoice(ticket_input.Text);
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    PrintInvoice(ticket_input.Text);
+                }));
             }
         }
 
