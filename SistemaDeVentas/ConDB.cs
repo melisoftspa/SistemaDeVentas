@@ -17,7 +17,7 @@ using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+//using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Security.Cryptography;
 using System.Windows.Shapes;
 using static System.Windows.Forms.LinkLabel;
@@ -431,7 +431,7 @@ namespace SistemaDeVentas
                     {
                         text += "and dbo.product.amount >= dbo.product.minimum ";
                     }
-                    text += text + $"and dbo.product.state = 1 and (coalesce(convert(nvarchar(max), dbo.product.name), '') + coalesce(convert(varchar(max), dbo.product.amount), '') + coalesce(convert(varchar(max), dbo.product.sale_price), '') + coalesce(convert(varchar(max), dbo.product.minimum), '') + coalesce(convert(varchar(max), dbo.product.bar_code), '') + coalesce(convert(varchar(max), dbo.product.stock), '') + coalesce(convert(varchar(max), dbo.product.price), '') + coalesce(convert(varchar(max), dbo.product.line), '') ) like '%{word}%' ORDER BY product.name ASC";
+                    text += $"and dbo.product.state = 1 and (coalesce(convert(nvarchar(max), dbo.product.name), '') + coalesce(convert(varchar(max), dbo.product.amount), '') + coalesce(convert(varchar(max), dbo.product.sale_price), '') + coalesce(convert(varchar(max), dbo.product.minimum), '') + coalesce(convert(varchar(max), dbo.product.bar_code), '') + coalesce(convert(varchar(max), dbo.product.stock), '') + coalesce(convert(varchar(max), dbo.product.price), '') + coalesce(convert(varchar(max), dbo.product.line), '') ) like '%{word}%' ORDER BY product.name ASC";
                 }
                 FormattableString query = $@"{text}";
                 DataTable dataTable = Context.ExecReturnQuery(query).Result;                
@@ -464,10 +464,10 @@ namespace SistemaDeVentas
             try
             {
                 var parameters = new SqlParameter[] {
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "nroticket", Value = nroticket, DbType = DbType.String },
-                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "userID", Value = userId, DbType = DbType.String },
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "ticket", Value = nroticket, DbType = DbType.String },
+                    new SqlParameter() { Direction = ParameterDirection.Input, ParameterName = "userid", Value = userId, DbType = DbType.String },
                 };
-                Context.RunQuery<int>("dbo.cancel_sale", parameters);
+                Context.RunQuery<string>("dbo.cancel_sale", parameters);
             }
             catch (Exception ex)
             {
@@ -916,7 +916,7 @@ namespace SistemaDeVentas
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                log("get Parameters", ex.ToString());
+                log("get Parameters: module: " + module + ", name: " + name, ex.ToString());
                 return string.Empty;
             }
         }

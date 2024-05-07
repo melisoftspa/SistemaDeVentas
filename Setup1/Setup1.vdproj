@@ -15,19 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_2CB1A5545F28495DAFD541D923735ED5"
+        "MsmKey" = "8:_43C376F823404E039ED0E2A46D261C31"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_7E9147545A204C85941176E5F617015F"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B08C13F735B04812A7B301AD559E4A87"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -56,6 +50,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -84,23 +86,33 @@
                 {
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.CoreRuntime.7.0.Arm64"
                     {
-                    "Name" = "8:.NET Runtime 7.0.0 (Arm64)"
+                    "Name" = "8:.NET Runtime 7.0.5 (Arm64)"
                     "ProductCode" = "8:Microsoft.NetCore.CoreRuntime.7.0.Arm64"
                     }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.CoreRuntime.7.0.x64"
                     {
-                    "Name" = "8:.NET Runtime 7.0.0 (x64)"
+                    "Name" = "8:.NET Runtime 7.0.5 (x64)"
                     "ProductCode" = "8:Microsoft.NetCore.CoreRuntime.7.0.x64"
                     }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.CoreRuntime.7.0.x86"
                     {
-                    "Name" = "8:.NET Runtime 7.0.0 (x86)"
+                    "Name" = "8:.NET Runtime 7.0.5 (x86)"
                     "ProductCode" = "8:Microsoft.NetCore.CoreRuntime.7.0.x86"
                     }
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.SqlServer.SqlLocalDB.15.0"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.DesktopRuntime.7.0.Arm64"
                     {
-                    "Name" = "8:SQL Server 2019 Express LocalDB"
-                    "ProductCode" = "8:Microsoft.SqlServer.SqlLocalDB.15.0"
+                    "Name" = "8:Entorno de ejecución de escritorio de .NET 7.0.5 (Arm64)"
+                    "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.7.0.Arm64"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.DesktopRuntime.7.0.x64"
+                    {
+                    "Name" = "8:Entorno de ejecución de escritorio de .NET 7.0.5 (x64)"
+                    "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.7.0.x64"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.DesktopRuntime.7.0.x86"
+                    {
+                    "Name" = "8:Entorno de ejecución de escritorio de .NET 7.0.5 (x86)"
+                    "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.7.0.x86"
                     }
                 }
             }
@@ -135,27 +147,7 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2CB1A5545F28495DAFD541D923735ED5"
-            {
-            "SourcePath" = "8:C:\\Users\\jmeli\\Downloads\\tienda.ico"
-            "TargetName" = "8:tienda.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_0BC7508B956C41A1BEDD42E901CF1A75"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:TRUE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:TRUE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B08C13F735B04812A7B301AD559E4A87"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_43C376F823404E039ED0E2A46D261C31"
             {
             "SourcePath" = "8:..\\SistemaDeVentas\\tienda.ico"
             "TargetName" = "8:tienda.ico"
@@ -215,6 +207,17 @@
                 {
                 }
             }
+            "{1525181F-901A-416C-8A58-119130FE478E}:_F82D8577AADB4BF8B44E5A328E6A7E8C"
+            {
+            "Name" = "8:#1921"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:StartMenuFolder"
+                "Folders"
+                {
+                }
+            }
         }
         "LaunchCondition"
         {
@@ -231,15 +234,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:POS"
-        "ProductCode" = "8:{20112D42-3F2A-419E-B518-E25A03B745F8}"
-        "PackageCode" = "8:{AEA04090-5604-499E-A63C-0A02E50348A7}"
+        "ProductCode" = "8:{19D7E4CE-ACA0-4442-AA6C-8576569166D0}"
+        "PackageCode" = "8:{AE483AD2-4258-4872-9EF4-F293E289B87F}"
         "UpgradeCode" = "8:{9395E19C-E67A-4350-9EB6-0470A472AC68}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
-        "DetectNewerInstalledVersion" = "11:FALSE"
+        "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.2.0"
+        "ProductVersion" = "8:1.2.2"
         "Manufacturer" = "8:MeliSoft SpA"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -249,8 +252,8 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
-        "ARPPRODUCTICON" = "8:_2CB1A5545F28495DAFD541D923735ED5"
-        "ARPIconIndex" = "3:0"
+        "ARPPRODUCTICON" = "8:_7E9147545A204C85941176E5F617015F"
+        "ARPIconIndex" = "3:32512"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:1"
@@ -352,18 +355,46 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E83D06E2B875447989669FBC9A6982B5"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_7F288636702A49DF9A341197AF58B7B7"
             {
             "Name" = "8:POS - Sistema de Ventas"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
+            "IconIndex" = "3:32512"
             "Transitive" = "11:FALSE"
             "Target" = "8:_7E9147545A204C85941176E5F617015F"
             "Folder" = "8:_21611262F5FE4027A25BE6296447947C"
             "WorkingFolder" = "8:_0BC7508B956C41A1BEDD42E901CF1A75"
-            "Icon" = "8:_B08C13F735B04812A7B301AD559E4A87"
+            "Icon" = "8:_7E9147545A204C85941176E5F617015F"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_9F5EB12B63ED4608AFC2133385F4AF01"
+            {
+            "Name" = "8:POS - Sistema de Ventas"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:32512"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_7E9147545A204C85941176E5F617015F"
+            "Folder" = "8:_F82D8577AADB4BF8B44E5A328E6A7E8C"
+            "WorkingFolder" = "8:_0BC7508B956C41A1BEDD42E901CF1A75"
+            "Icon" = "8:_7E9147545A204C85941176E5F617015F"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C6779AAAEB7845A693CD2FB0FFF43E84"
+            {
+            "Name" = "8:POS - Sistema de Ventas"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:32512"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_7E9147545A204C85941176E5F617015F"
+            "Folder" = "8:_227F3E857FE947C3AB51EC4FDBABFEA3"
+            "WorkingFolder" = "8:_0BC7508B956C41A1BEDD42E901CF1A75"
+            "Icon" = "8:_7E9147545A204C85941176E5F617015F"
             "Feature" = "8:"
             }
         }

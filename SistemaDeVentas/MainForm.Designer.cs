@@ -86,6 +86,7 @@
             this.SalesButton = new System.Windows.Forms.Button();
             this.PurchasesButton = new System.Windows.Forms.Button();
             this.InventoryButton = new System.Windows.Forms.Button();
+            this.Sales2Button = new FontAwesome.Sharp.IconButton();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -94,10 +95,10 @@
             this.label1.AutoEllipsis = true;
             this.label1.Enabled = false;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(24, 462);
+            this.label1.Location = new System.Drawing.Point(52, 462);
             this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(426, 265);
+            this.label1.Size = new System.Drawing.Size(272, 265);
             this.label1.TabIndex = 2;
             this.label1.Text = "Aqui puede crear, modificar o eliminar (no recomendado) productos como el precio," +
     " nombre, stock minimo";
@@ -108,10 +109,10 @@
             this.label2.AutoEllipsis = true;
             this.label2.Enabled = false;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(462, 462);
+            this.label2.Location = new System.Drawing.Point(378, 462);
             this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(426, 265);
+            this.label2.Size = new System.Drawing.Size(273, 265);
             this.label2.TabIndex = 3;
             this.label2.Text = "Aqui se registran los ingresos a almacen, como tambien devoluciones, el producto " +
     "debe estar registrado previamente en el Inventario";
@@ -122,10 +123,10 @@
             this.label3.AutoEllipsis = true;
             this.label3.Enabled = false;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label3.Location = new System.Drawing.Point(918, 462);
+            this.label3.Location = new System.Drawing.Point(702, 462);
             this.label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(426, 265);
+            this.label3.Size = new System.Drawing.Size(271, 114);
             this.label3.TabIndex = 7;
             this.label3.Text = "Aqui se registran las ventas realizadas";
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -135,10 +136,10 @@
             this.label4.AutoEllipsis = true;
             this.label4.Enabled = false;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label4.Location = new System.Drawing.Point(1374, 462);
+            this.label4.Location = new System.Drawing.Point(1018, 462);
             this.label4.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(426, 265);
+            this.label4.Size = new System.Drawing.Size(284, 265);
             this.label4.TabIndex = 8;
             this.label4.Text = "Aqui se puede ver todo el historial de ventas, ingresos y modificaciones de los p" +
     "roductos a travez del tiempo";
@@ -149,10 +150,10 @@
             this.label5.AutoEllipsis = true;
             this.label5.Enabled = false;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label5.Location = new System.Drawing.Point(1830, 462);
+            this.label5.Location = new System.Drawing.Point(1347, 462);
             this.label5.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(426, 265);
+            this.label5.Size = new System.Drawing.Size(273, 265);
             this.label5.TabIndex = 9;
             this.label5.Text = "Aqui se pueden ver estadisticas de los productos, como cual se vendio mas, cual s" +
     "e vende menos, las ganancias registradas, etc.";
@@ -169,7 +170,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(12, 5, 0, 5);
-            this.menuStrip1.Size = new System.Drawing.Size(2280, 44);
+            this.menuStrip1.Size = new System.Drawing.Size(1699, 44);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -241,10 +242,11 @@
             this.stadisticsButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.stadisticsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.stadisticsButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.stadisticsButton.Location = new System.Drawing.Point(1901, 88);
+            this.stadisticsButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.stadisticsButton.Location = new System.Drawing.Point(1347, 79);
             this.stadisticsButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.stadisticsButton.Name = "stadisticsButton";
-            this.stadisticsButton.Size = new System.Drawing.Size(283, 358);
+            this.stadisticsButton.Size = new System.Drawing.Size(273, 367);
             this.stadisticsButton.TabIndex = 5;
             this.stadisticsButton.Text = "Estadisticas";
             this.stadisticsButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -259,10 +261,11 @@
             this.historicalButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.historicalButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.historicalButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.historicalButton.Location = new System.Drawing.Point(1440, 79);
+            this.historicalButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.historicalButton.Location = new System.Drawing.Point(1018, 79);
             this.historicalButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.historicalButton.Name = "historicalButton";
-            this.historicalButton.Size = new System.Drawing.Size(330, 367);
+            this.historicalButton.Size = new System.Drawing.Size(284, 367);
             this.historicalButton.TabIndex = 4;
             this.historicalButton.Text = "Historial";
             this.historicalButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -277,10 +280,11 @@
             this.SalesButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.SalesButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.SalesButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.SalesButton.Location = new System.Drawing.Point(993, 79);
+            this.SalesButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.SalesButton.Location = new System.Drawing.Point(702, 79);
             this.SalesButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.SalesButton.Name = "SalesButton";
-            this.SalesButton.Size = new System.Drawing.Size(305, 367);
+            this.SalesButton.Size = new System.Drawing.Size(271, 367);
             this.SalesButton.TabIndex = 3;
             this.SalesButton.Text = "Ventas";
             this.SalesButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -289,18 +293,18 @@
             // 
             // PurchasesButton
             // 
-            this.PurchasesButton.AutoSize = true;
             this.PurchasesButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("PurchasesButton.BackgroundImage")));
             this.PurchasesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.PurchasesButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.PurchasesButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.PurchasesButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.PurchasesButton.Location = new System.Drawing.Point(539, 79);
+            this.PurchasesButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.PurchasesButton.Location = new System.Drawing.Point(378, 79);
             this.PurchasesButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.PurchasesButton.Name = "PurchasesButton";
-            this.PurchasesButton.Size = new System.Drawing.Size(315, 367);
+            this.PurchasesButton.Size = new System.Drawing.Size(273, 367);
             this.PurchasesButton.TabIndex = 1;
-            this.PurchasesButton.Text = "Ingreso a Almacen";
+            this.PurchasesButton.Text = "Almacen";
             this.PurchasesButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.PurchasesButton.UseVisualStyleBackColor = true;
             this.PurchasesButton.Click += new System.EventHandler(this.PurchasesButton_Click);
@@ -313,7 +317,8 @@
             this.InventoryButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.InventoryButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.InventoryButton.ForeColor = System.Drawing.Color.DarkSlateGray;
-            this.InventoryButton.Location = new System.Drawing.Point(104, 79);
+            this.InventoryButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.InventoryButton.Location = new System.Drawing.Point(52, 79);
             this.InventoryButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.InventoryButton.Name = "InventoryButton";
             this.InventoryButton.Size = new System.Drawing.Size(272, 367);
@@ -323,12 +328,31 @@
             this.InventoryButton.UseVisualStyleBackColor = true;
             this.InventoryButton.Click += new System.EventHandler(this.InventoryButton_Click);
             // 
+            // Sales2Button
+            // 
+            this.Sales2Button.FlatAppearance.BorderSize = 0;
+            this.Sales2Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Sales2Button.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.Sales2Button.IconChar = FontAwesome.Sharp.IconChar.Studiovinari;
+            this.Sales2Button.IconColor = System.Drawing.Color.LightCoral;
+            this.Sales2Button.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this.Sales2Button.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.Sales2Button.Location = new System.Drawing.Point(748, 546);
+            this.Sales2Button.Name = "Sales2Button";
+            this.Sales2Button.Size = new System.Drawing.Size(199, 84);
+            this.Sales2Button.TabIndex = 10;
+            this.Sales2Button.Text = "Ventas 2.0";
+            this.Sales2Button.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.Sales2Button.UseVisualStyleBackColor = true;
+            this.Sales2Button.Click += new System.EventHandler(this.Sales2Button_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(2280, 780);
+            this.ClientSize = new System.Drawing.Size(1699, 780);
+            this.Controls.Add(this.Sales2Button);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -355,5 +379,7 @@
         }
 
         #endregion
+
+        private FontAwesome.Sharp.IconButton Sales2Button;
     }
 }

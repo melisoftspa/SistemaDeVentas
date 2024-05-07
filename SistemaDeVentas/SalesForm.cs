@@ -424,7 +424,7 @@ namespace SistemaDeVentas
             detailsDataTable.Clear();
             cleanfields();
             EnabledProcessButton(active: false);
-            setProductsGridFormat();
+            //setProductsGridFormat();
             barcode_input.Focus();
             vendor_label.Text = string.Format(_welcome, ConDB.userName, ConDB.getTotalInvoiceSales("", "", ConDB.userId), ConDB.getTotalSales("", "", ConDB.userId).ToString("c"));
         }
@@ -1129,11 +1129,8 @@ namespace SistemaDeVentas
                 try
                 {
                     if (invoice)
-                    {
-                        this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            PrintInvoice();
-                        }));                        
+                    {                
+                        PrintInvoice();
                     }
                 }
                 catch (Exception ex)
@@ -1276,10 +1273,7 @@ namespace SistemaDeVentas
         {
             if (current_invoice_nroTicket > 0 || int.Parse(ticket_input.Text) > 0)
             {
-                this.BeginInvoke(new MethodInvoker(delegate
-                {
-                    PrintInvoice(ticket_input.Text);
-                }));
+                PrintInvoice(ticket_input.Text);
             }
         }
 
@@ -1381,10 +1375,10 @@ namespace SistemaDeVentas
             if (string.IsNullOrEmpty(filter_word)) {
                 InventoryDataGrid.DataSource = ConDB.getProductsList("", isSales: true);
             } else {
-                (InventoryDataGrid.DataSource as DataTable).DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
-
+                //(InventoryDataGrid.DataSource as DataTable).DefaultView.RowFilter = string.Format("[_RowString] LIKE '%{0}%'", filter_word);
+                InventoryDataGrid.DataSource = ConDB.getProductsList(filter_word, isSales: true);
             }
-            setProductsGridFormat();
+            //setProductsGridFormat();
         }
 
         private void btnCleanSearch_Click(object sender, EventArgs e)

@@ -43,109 +43,108 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
-            this.pwd_input = new System.Windows.Forms.TextBox();
-            this.username_input = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.loginButton = new System.Windows.Forms.Button();
-            this.conection_label = new System.Windows.Forms.LinkLabel();
-            this.lblVersion = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            pwd_input = new TextBox();
+            username_input = new TextBox();
+            label2 = new Label();
+            label1 = new Label();
+            loginButton = new Button();
+            conection_label = new LinkLabel();
+            lblVersion = new Label();
+            SuspendLayout();
             // 
             // pwd_input
             // 
-            this.pwd_input.Location = new System.Drawing.Point(232, 155);
-            this.pwd_input.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
-            this.pwd_input.Name = "pwd_input";
-            this.pwd_input.PasswordChar = '*';
-            this.pwd_input.Size = new System.Drawing.Size(462, 35);
-            this.pwd_input.TabIndex = 11;
-            this.pwd_input.KeyDown += new System.Windows.Forms.KeyEventHandler(this.pwd_input_KeyDown);
+            pwd_input.Location = new Point(232, 155);
+            pwd_input.Margin = new Padding(6, 7, 6, 7);
+            pwd_input.Name = "pwd_input";
+            pwd_input.PasswordChar = '*';
+            pwd_input.Size = new Size(462, 35);
+            pwd_input.TabIndex = 11;
+            pwd_input.KeyDown += pwd_input_KeyDown;
             // 
             // username_input
             // 
-            this.username_input.Location = new System.Drawing.Point(232, 74);
-            this.username_input.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
-            this.username_input.Name = "username_input";
-            this.username_input.Size = new System.Drawing.Size(462, 35);
-            this.username_input.TabIndex = 10;
+            username_input.Location = new Point(232, 74);
+            username_input.Margin = new Padding(6, 7, 6, 7);
+            username_input.Name = "username_input";
+            username_input.Size = new Size(462, 35);
+            username_input.TabIndex = 10;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(92, 162);
-            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(123, 30);
-            this.label2.TabIndex = 9;
-            this.label2.Text = "Contraseña:";
+            label2.AutoSize = true;
+            label2.Location = new Point(92, 162);
+            label2.Margin = new Padding(6, 0, 6, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(123, 30);
+            label2.TabIndex = 9;
+            label2.Text = "Contraseña:";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(92, 81);
-            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 30);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "Usuario:";
+            label1.AutoSize = true;
+            label1.Location = new Point(92, 81);
+            label1.Margin = new Padding(6, 0, 6, 0);
+            label1.Name = "label1";
+            label1.Size = new Size(88, 30);
+            label1.TabIndex = 8;
+            label1.Text = "Usuario:";
             // 
             // loginButton
             // 
-            this.loginButton.Location = new System.Drawing.Point(320, 247);
-            this.loginButton.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
-            this.loginButton.Name = "loginButton";
-            this.loginButton.Size = new System.Drawing.Size(150, 53);
-            this.loginButton.TabIndex = 12;
-            this.loginButton.Text = "Ingresar";
-            this.loginButton.UseVisualStyleBackColor = true;
-            this.loginButton.Click += new System.EventHandler(this.loginButton_Click);
+            loginButton.Location = new Point(320, 247);
+            loginButton.Margin = new Padding(6, 7, 6, 7);
+            loginButton.Name = "loginButton";
+            loginButton.Size = new Size(150, 53);
+            loginButton.TabIndex = 12;
+            loginButton.Text = "Ingresar";
+            loginButton.UseVisualStyleBackColor = true;
+            loginButton.Click += loginButton_Click;
             // 
             // conection_label
             // 
-            this.conection_label.AutoSize = true;
-            this.conection_label.Location = new System.Drawing.Point(226, 385);
-            this.conection_label.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.conection_label.Name = "conection_label";
-            this.conection_label.Size = new System.Drawing.Size(345, 30);
-            this.conection_label.TabIndex = 13;
-            this.conection_label.TabStop = true;
-            this.conection_label.Text = "Solucionar Problemas de Coneccion";
-            this.conection_label.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.conection_label_LinkClicked);
+            conection_label.AutoSize = true;
+            conection_label.Location = new Point(226, 385);
+            conection_label.Margin = new Padding(6, 0, 6, 0);
+            conection_label.Name = "conection_label";
+            conection_label.Size = new Size(345, 30);
+            conection_label.TabIndex = 13;
+            conection_label.TabStop = true;
+            conection_label.Text = "Solucionar Problemas de Coneccion";
+            conection_label.LinkClicked += conection_label_LinkClicked;
             // 
             // lblVersion
             // 
-            this.lblVersion.AutoSize = true;
-            this.lblVersion.Location = new System.Drawing.Point(656, 406);
-            this.lblVersion.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(112, 30);
-            this.lblVersion.TabIndex = 14;
-            this.lblVersion.Text = "version 1.1";
+            lblVersion.AutoSize = true;
+            lblVersion.Location = new Point(656, 406);
+            lblVersion.Margin = new Padding(6, 0, 6, 0);
+            lblVersion.Name = "lblVersion";
+            lblVersion.Size = new Size(128, 30);
+            lblVersion.TabIndex = 14;
+            lblVersion.Text = "version 1.2.2";
             // 
             // LoginForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(798, 457);
-            this.Controls.Add(this.lblVersion);
-            this.Controls.Add(this.conection_label);
-            this.Controls.Add(this.loginButton);
-            this.Controls.Add(this.pwd_input);
-            this.Controls.Add(this.username_input);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
-            this.Name = "LoginForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Login";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LoginForm_FormClosing);
-            this.Load += new System.EventHandler(this.LoginForm_Load);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(12F, 30F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
+            ClientSize = new Size(798, 457);
+            Controls.Add(lblVersion);
+            Controls.Add(conection_label);
+            Controls.Add(loginButton);
+            Controls.Add(pwd_input);
+            Controls.Add(username_input);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(6, 7, 6, 7);
+            Name = "LoginForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Login";
+            FormClosing += LoginForm_FormClosing;
+            Load += LoginForm_Load;
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

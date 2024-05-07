@@ -118,5 +118,12 @@ namespace SistemaDeVentas
             form.ShowDialog();
         }
 
+        private void Sales2Button_Click(object sender, EventArgs e)
+        {
+            Hide();
+            var form = new StartForm();
+            form.Location = Screen.AllScreens[0].WorkingArea.Location;
+            form.ShowDialog();
+        }
     }
 }

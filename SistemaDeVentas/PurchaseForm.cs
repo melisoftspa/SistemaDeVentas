@@ -32,7 +32,7 @@ namespace SistemaDeVentas
         {
             if (e.KeyCode == Keys.Return)
             {
-                
+
             }
         }
 

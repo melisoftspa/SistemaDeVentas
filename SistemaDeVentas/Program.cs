@@ -17,6 +17,7 @@ namespace SistemaDeVentas
             Application.SetCompatibleTextRenderingDefault(defaultValue: false);
             ApplicationConfiguration.Initialize();
             Application.Run(new LoginForm());
+            //Application.Run(new StartForm());
         }
     }
 }
