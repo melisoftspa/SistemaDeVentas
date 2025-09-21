@@ -12,6 +12,7 @@ public interface ISaleService
     Task<Sale> UpdateSaleAsync(Sale sale);
     Task<bool> CancelSaleAsync(Guid saleId, string reason);
     Task<bool> CompleteSaleAsync(Guid saleId);
+    Task<bool> CompleteSaleWithDteAsync(Guid saleId, int tipoDocumento);
     Task<bool> ValidateSaleAsync(Sale sale, IEnumerable<Detail> details);
     Task<decimal> CalculateSaleTotalAsync(IEnumerable<Detail> details);
     Task<decimal> CalculateTaxAmountAsync(IEnumerable<Detail> details);

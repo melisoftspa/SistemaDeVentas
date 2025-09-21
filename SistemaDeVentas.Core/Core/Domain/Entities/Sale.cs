@@ -41,6 +41,10 @@ public class Sale
 
     public bool State { get; set; } = true;
 
+    public bool DteGenerated { get; set; } = false;
+    public int? Folio { get; set; }
+    public string? DteXml { get; set; }
+
     // Navigation properties
     public User? User { get; set; }
     public List<Detail> Details { get; set; } = new List<Detail>();

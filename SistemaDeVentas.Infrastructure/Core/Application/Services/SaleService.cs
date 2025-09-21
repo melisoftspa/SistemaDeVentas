@@ -1,6 +1,7 @@
 using SistemaDeVentas.Core.Application.Interfaces;
 using SistemaDeVentas.Core.Domain.Entities;
 using SistemaDeVentas.Core.Domain.Interfaces;
+using System.Xml.Linq;
 
 namespace SistemaDeVentas.Infrastructure.Core.Application.Services;
 
@@ -10,17 +11,20 @@ public class SaleService : ISaleService
     private readonly IDetailRepository _detailRepository;
     private readonly IProductRepository _productRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IDteSaleService _dteSaleService;
 
     public SaleService(
         ISaleRepository saleRepository,
         IDetailRepository detailRepository,
         IProductRepository productRepository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IDteSaleService dteSaleService)
     {
         _saleRepository = saleRepository;
         _detailRepository = detailRepository;
         _productRepository = productRepository;
         _userRepository = userRepository;
+        _dteSaleService = dteSaleService;
     }
 
     public async Task<IEnumerable<Sale>> GetAllSalesAsync()
@@ -175,9 +179,63 @@ public class SaleService : ISaleService
         var sale = await _saleRepository.GetByIdAsync(saleId);
         if (sale == null) return false;
 
-        sale.State = true;
-        await _saleRepository.UpdateAsync(sale);
-        return true;
+        try
+        {
+            // Generar DTE automáticamente
+            int tipoDocumento = await DetermineDteTypeForSaleAsync(saleId);
+            await _dteSaleService.GenerateDteForSaleAsync(saleId, tipoDocumento);
+
+            sale.State = true;
+            await _saleRepository.UpdateAsync(sale);
+            return true;
+        }
+        catch
+        {
+            // Si falla la generación de DTE, no completar la venta
+            return false;
+        }
+    }
+
+    private async Task<int> DetermineDteTypeForSaleAsync(Guid saleId)
+    {
+        var details = await _detailRepository.GetBySaleAsync(saleId);
+        bool hasNonExempt = false;
+
+        foreach (var detail in details)
+        {
+            if (detail.IdProduct.HasValue)
+            {
+                var product = await _productRepository.GetByIdAsync(detail.IdProduct.Value);
+                if (product != null && !product.Exenta)
+                {
+                    hasNonExempt = true;
+                    break;
+                }
+            }
+        }
+
+        return hasNonExempt ? 39 : 41;
+    }
+
+    public async Task<bool> CompleteSaleWithDteAsync(Guid saleId, int tipoDocumento)
+    {
+        // Primero completar la venta normalmente
+        var saleCompleted = await CompleteSaleAsync(saleId);
+        if (!saleCompleted) return false;
+
+        try
+        {
+            // Generar DTE para la venta completada
+            await _dteSaleService.GenerateDteForSaleAsync(saleId, tipoDocumento);
+            return true;
+        }
+        catch (Exception)
+        {
+            // Si falla la generación de DTE, la venta ya está completada
+            // Podríamos marcar la venta como completada pero sin DTE
+            // Por ahora, devolver false para indicar que algo falló
+            return false;
+        }
     }
 
     public async Task<bool> ValidateSaleAsync(Sale sale, IEnumerable<Detail> details)

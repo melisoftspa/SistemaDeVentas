@@ -45,9 +45,6 @@
     <PackageReference Include="System.Web.Services.Description" Version="8.1.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Pdf417EncoderLibraryExt\Pdf417EncoderLibraryExt.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="LibPrintTicket">

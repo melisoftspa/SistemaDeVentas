@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using SistemaDeVentas.Core.Domain.Entities;
+using SistemaDeVentas.Core.Domain.Entities.DTE;
 using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.Infrastructure.Data;
@@ -31,6 +32,8 @@ public partial class SalesSystemDbContext : DbContext, ISalesDbContext
     public virtual DbSet<Tax> Taxes { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Caf> Cafs { get; set; }
+    public virtual DbSet<CertificateData> CertificateDatas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Server=.\\;Database=SalesSystemDB;Integrated Security=SSPI;Trust Server Certificate=true");

@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
 using LibPrintTicket;
-using Pdf417EncoderLibraryExt;
+
 using SistemaDeVentas.Models;
 
 namespace SistemaDeVentas
@@ -1168,17 +1168,6 @@ namespace SistemaDeVentas
                     text = text + string.Format("{0:C0}", dataTable.Rows[i]["total"]).Replace(",00", "") + Environment.NewLine;
                 }
 
-                // https://www.codeproject.com/Articles/1347529/PDF417-Barcode-Encoder-Class-Library-and-Demo-App
-                // create PDF417 barcode object
-                Pdf417BarcodeEncoder Encoder = new Pdf417BarcodeEncoder
-                {
-                    // change default data columns
-                    DefaultDataColumns = 10,
-                };
-
-                // encode barcode data
-                //Encoder.Encode(text);
-                //ticket.HeaderImage = Encoder.CreateBarcodeBitmap();                
             }
             catch (Exception ex)
             {
