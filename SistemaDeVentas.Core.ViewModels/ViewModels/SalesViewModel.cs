@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using Microsoft.UI.Xaml.Media.Imaging;
 using SistemaDeVentas.Core.Application.Interfaces;
 using SistemaDeVentas.Core.Application.Services.DTE;
 using SistemaDeVentas.Core.Domain.Interfaces;
 using SistemaDeVentas.Core.Domain.Entities;
+using SistemaDeVentas.Core.Domain.Entities.DTE;
 using SistemaDeVentas.Infrastructure.Services.DTE;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -27,10 +29,11 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
         private readonly IStampingService _stampingService;
         private readonly IDetailFactory _detailFactory;
         private readonly IMercadoPagoService _mercadoPagoService;
+        private readonly PrintViewModel _printViewModel;
 
         public SalesViewModel(ISaleService saleService, IProductService productService, IUserService userService,
                               IDteSaleService dteSaleService, IPdf417Service pdf417Service, IStampingService stampingService,
-                              IDetailFactory detailFactory, IMercadoPagoService mercadoPagoService)
+                              IDetailFactory detailFactory, IMercadoPagoService mercadoPagoService, PrintViewModel printViewModel)
         {
             _saleService = saleService ?? throw new ArgumentNullException(nameof(saleService));
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
@@ -40,6 +43,7 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
             _stampingService = stampingService ?? throw new ArgumentNullException(nameof(stampingService));
             _detailFactory = detailFactory ?? throw new ArgumentNullException(nameof(detailFactory));
             _mercadoPagoService = mercadoPagoService ?? throw new ArgumentNullException(nameof(mercadoPagoService));
+            _printViewModel = printViewModel ?? throw new ArgumentNullException(nameof(printViewModel));
 
             Title = "Punto de Venta";
             CartItems = new ObservableCollection<IDetail>();
@@ -150,6 +154,28 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
         {
             get => _lastProcessedSaleId;
             set => SetProperty(ref _lastProcessedSaleId, value);
+        }
+
+        // Configuración de impresión automática
+        private bool _autoPrintEnabled = true; // TODO: Cargar desde configuración
+        public bool AutoPrintEnabled
+        {
+            get => _autoPrintEnabled;
+            set => SetProperty(ref _autoPrintEnabled, value);
+        }
+
+        private bool _printReceiptAfterSale = true;
+        public bool PrintReceiptAfterSale
+        {
+            get => _printReceiptAfterSale;
+            set => SetProperty(ref _printReceiptAfterSale, value);
+        }
+
+        private bool _printInvoiceAfterDteGeneration = true;
+        public bool PrintInvoiceAfterDteGeneration
+        {
+            get => _printInvoiceAfterDteGeneration;
+            set => SetProperty(ref _printInvoiceAfterDteGeneration, value);
         }
 
         public string CurrentDateTime => DateTime.Now.ToString("dddd, dd MMMM yyyy - HH:mm");
@@ -290,6 +316,8 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
         {
             if (IsBusy) return;
 
+            string? dteXmlString = null;
+
             try
             {
                 IsBusy = true;
@@ -332,7 +360,7 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
                     // Actualizar información DTE en la base de datos
                     var folio = await _dteSaleService.GetFolioForSaleAsync(createdSale.Id);
                     var cafId = await _dteSaleService.GetCafIdForSaleAsync(createdSale.Id);
-                    var dteXmlString = await _dteSaleService.GetDteXmlForSaleAsync(createdSale.Id);
+                    dteXmlString = await _dteSaleService.GetDteXmlForSaleAsync(createdSale.Id);
 
                     if (folio.HasValue && dteXmlString != null)
                     {
@@ -361,8 +389,8 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
                 // Limpiar carrito después de venta exitosa
                 await ClearCartAsync();
 
-                // Mostrar mensaje de éxito
-                // TODO: Implementar notificación de éxito
+                // Imprimir automáticamente si está habilitado
+                await PrintSaleAsync(createdSale, dteXmlString);
             }
             catch (Exception ex)
             {
@@ -512,7 +540,10 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
                 await _saleService.UpdateSalePaymentInfoAsync(createdSale.Id, "mercadopago", paymentResult.TransactionId);
 
                 // Procesar DTE normalmente
-                await ProcessDteForSale(createdSale.Id);
+                var dteXml = await ProcessDteForSale(createdSale.Id);
+
+                // Imprimir automáticamente si está habilitado
+                await PrintSaleAsync(createdSale, dteXml);
 
                 // Limpiar estado MercadoPago
                 MercadoPagoQrCode = string.Empty;
@@ -528,7 +559,7 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
             }
         }
 
-        private async Task ProcessDteForSale(Guid saleId)
+        private async Task<string?> ProcessDteForSale(Guid saleId)
         {
             try
             {
@@ -552,10 +583,13 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
                 LastProcessedSaleId = saleId;
                 IsPdf417Visible = true;
                 await ShowPdf417Async();
+
+                return dteXmlString;
             }
             catch (Exception ex)
             {
                 SetError($"Error generando DTE: {ex.Message}");
+                return null;
             }
         }
 
@@ -594,6 +628,91 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// Convierte XML DTE a objeto DteDocument
+        /// </summary>
+        public async Task<DteDocument?> GetDteDocumentAsync(string dteXml)
+        {
+            if (string.IsNullOrEmpty(dteXml))
+                return null;
+
+            try
+            {
+                var serializer = new XmlSerializer(typeof(DteDocument));
+                using var stringReader = new System.IO.StringReader(dteXml);
+                return (DteDocument?)serializer.Deserialize(stringReader);
+            }
+            catch (Exception ex)
+            {
+                SetError($"Error al deserializar DTE XML: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene la venta procesada actualmente para impresión
+        /// </summary>
+        public async Task<Sale?> GetProcessedSaleAsync()
+        {
+            if (!LastProcessedSaleId.HasValue) return null;
+
+            try
+            {
+                return await _saleService.GetSaleByIdAsync(LastProcessedSaleId.Value);
+            }
+            catch (Exception ex)
+            {
+                SetError($"Error al obtener venta procesada: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Imprime automáticamente la venta y/o DTE según configuración
+        /// </summary>
+        private async Task PrintSaleAsync(Sale sale, string? dteXml = null)
+        {
+            if (!AutoPrintEnabled) return;
+
+            try
+            {
+                // Imprimir boleta si está habilitado
+                if (PrintReceiptAfterSale)
+                {
+                    _printViewModel.CurrentSale = sale;
+                    _printViewModel.PrintReceiptCommand.Execute(null);
+                }
+
+                // Imprimir factura DTE si está habilitado y hay XML DTE
+                if (PrintInvoiceAfterDteGeneration && !string.IsNullOrEmpty(dteXml))
+                {
+                    var dteDocument = await GetDteDocumentAsync(dteXml);
+                    if (dteDocument != null)
+                    {
+                        _printViewModel.CurrentDteDocument = dteDocument;
+                        // Generar QR code data (puede ser el TED o folio)
+                        _printViewModel.QrCodeData = GenerateQrCodeData(dteDocument);
+                        _printViewModel.PrintInvoiceCommand.Execute(null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // No interrumpir el flujo de venta por errores de impresión
+                SetError($"Error en impresión automática (venta continúa): {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Genera datos QR para el DTE (simplificado)
+        /// </summary>
+        private string GenerateQrCodeData(DteDocument dteDocument)
+        {
+            // Implementar lógica para generar QR code según estándar DTE
+            // Por ahora, devolver el folio
+            return dteDocument.IdDoc.Folio.ToString();
         }
 
         /// <summary>

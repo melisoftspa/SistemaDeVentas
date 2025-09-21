@@ -10,6 +10,7 @@ using SistemaDeVentas.Infrastructure.Data;
 using SistemaDeVentas.Infrastructure.Data.Repositories;
 using SistemaDeVentas.Infrastructure.Services;
 using SistemaDeVentas.Infrastructure.Services.DTE;
+using SistemaDeVentas.Infrastructure.Services.Printer;
 using SistemaDeVentas.Infrastructure.Services.SII;
 
 namespace SistemaDeVentas.Infrastructure.DependencyInjection;
@@ -75,6 +76,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMercadoPagoService, MercadoPagoService>();
         services.AddOptions<MercadoPagoSettings>();
 
+        // Registrar servicios de impresoras
+        services.AddScoped<IPrinterConfiguration, PrinterConfiguration>();
+        services.AddScoped<IPrintJobQueue, PrintJobQueue>();
+        services.AddScoped<IThermalPrinterService, ThermalPrinterService>();
+        services.AddHostedService<PrintJobProcessor>();
+
         return services;
     }
 
@@ -136,6 +143,12 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient<MercadoPagoService>();
         services.AddScoped<IMercadoPagoService, MercadoPagoService>();
         services.AddOptions<MercadoPagoSettings>();
+
+        // Registrar servicios de impresoras
+        services.AddScoped<IPrinterConfiguration, PrinterConfiguration>();
+        services.AddScoped<IPrintJobQueue, PrintJobQueue>();
+        services.AddScoped<IThermalPrinterService, ThermalPrinterService>();
+        services.AddHostedService<PrintJobProcessor>();
 
         return services;
     }

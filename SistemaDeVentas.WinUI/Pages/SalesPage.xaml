@@ -2,14 +2,13 @@
 <Page
     x:Class="SistemaDeVentas.WinUI.Pages.SalesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:viewmodels="using:SistemaDeVentas.Core.ViewModels.ViewModels"
-    xmlns:converters="using:SistemaDeVentas.WinUI.Converters">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -24,7 +23,7 @@
                 
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="Punto de Venta" Style="{ThemeResource TitleTextBlockStyle}"/>
-                    <TextBlock Text="{x:Bind ViewModel.CurrentDateTime, Mode=OneWay}" 
+                    <TextBlock Text="{Binding ViewModel.CurrentDateTime, Mode=OneWay}" 
                                Style="{ThemeResource CaptionTextBlockStyle}" 
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                 </StackPanel>
@@ -156,7 +155,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="Subtotal:"/>
-                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Subtotal, Mode=OneWay}" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="1" Text="{Binding ViewModel.Subtotal, Mode=OneWay}" FontWeight="SemiBold"/>
                         </Grid>
 
                         <Grid>
@@ -165,7 +164,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="IVA (19%):"/>
-                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Tax, Mode=OneWay}" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="1" Text="{Binding ViewModel.Tax, Mode=OneWay}" FontWeight="SemiBold"/>
                         </Grid>
 
                         <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}"/>
@@ -176,7 +175,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="Total:" Style="{ThemeResource SubtitleTextBlockStyle}"/>
-                            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Total, Mode=OneWay}" 
+                            <TextBlock Grid.Column="1" Text="{Binding ViewModel.Total, Mode=OneWay}" 
                                        Style="{ThemeResource SubtitleTextBlockStyle}" 
                                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                         </Grid>
@@ -190,7 +189,7 @@
                         </ComboBox>
 
                         <ComboBox Header="Tipo de Documento DTE" PlaceholderText="Seleccionar..."
-                                  SelectedValue="{x:Bind ViewModel.SelectedDteType, Mode=TwoWay}"
+                                  SelectedValue="{Binding ViewModel.SelectedDteType, Mode=TwoWay}"
                                   HorizontalAlignment="Stretch" Margin="0,8,0,0">
                             <ComboBoxItem Content="Boleta Afecta" Tag="39"/>
                             <ComboBoxItem Content="Boleta Exenta" Tag="41"/>
@@ -202,7 +201,7 @@
                     <!-- PDF417 Code Display -->
                     <Border Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                             CornerRadius="8" Padding="16" Margin="0,16,0,0"
-                            Visibility="{x:Bind ViewModel.IsPdf417BitmapVisible, Mode=OneWay}">
+                            Visibility="{Binding ViewModel.IsPdf417BitmapVisible, Mode=OneWay}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -211,7 +210,7 @@
                             <TextBlock Grid.Row="0" Text="Código PDF417 del TED"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
                                        Margin="0,0,0,16"/>
-                            <Image Grid.Row="1" Source="{x:Bind ViewModel.Pdf417ImageSource, Mode=OneWay}"
+                            <Image Grid.Row="1" Source="{Binding ViewModel.Pdf417ImageSource, Mode=OneWay}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Stretch="Uniform"/>
                         </Grid>
@@ -221,7 +220,7 @@
                     <StackPanel Grid.Row="3" Spacing="8" Margin="0,24,0,0">
                         <Button Style="{StaticResource PrimaryButtonStyle}"
                                 HorizontalAlignment="Stretch"
-                                Command="{x:Bind ViewModel.ProcessSaleCommand}">
+                                Command="{Binding ViewModel.ProcessSaleCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE8FB;"/>
@@ -231,8 +230,8 @@
                         </Button>
                         <Button Style="{StaticResource FluentButtonStyle}"
                                 HorizontalAlignment="Stretch"
-                                Visibility="{x:Bind ViewModel.IsPdf417Visible, Mode=OneWay}"
-                                Command="{x:Bind ViewModel.ShowPdf417Command}">
+                                Visibility="{Binding ViewModel.IsPdf417Visible, Mode=OneWay}"
+                                Command="{Binding ViewModel.ShowPdf417Command}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE8A5;"/>
@@ -242,7 +241,7 @@
                         </Button>
                         <Button Style="{StaticResource FluentButtonStyle}"
                                 HorizontalAlignment="Stretch"
-                                Command="{x:Bind ViewModel.ClearCartCommand}">
+                                Command="{Binding ViewModel.ClearCartCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE74D;"/>
@@ -255,8 +254,107 @@
             </Border>
         </Grid>
 
+        <!-- Print Controls Section -->
+        <Border Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="8" Padding="16" Margin="16,0,16,16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Print Header -->
+                <TextBlock Grid.Row="0" Text="Impresión de Documentos"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                           Margin="0,0,0,16"/>
+
+                <!-- Print Controls -->
+                <StackPanel Grid.Row="1" Spacing="12">
+                    <ComboBox Header="Impresora Seleccionada"
+                              PlaceholderText="Seleccionar impresora..."
+                              HorizontalAlignment="Stretch"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Style="{StaticResource PrimaryButtonStyle}"
+                                IsEnabled="True">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE749;"/>
+                                    <TextBlock Text="Imprimir Boleta"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+
+                        <Button Style="{StaticResource FluentButtonStyle}"
+                                IsEnabled="True">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE8A5;"/>
+                                    <TextBlock Text="Imprimir Factura"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+
+                        <Button Style="{StaticResource FluentButtonStyle}"
+                                IsEnabled="True">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE8A5;"/>
+                                    <TextBlock Text="Prueba de Impresión"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+
+                        <Button Style="{StaticResource SubtleButtonStyle}">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE72C;"/>
+                                    <TextBlock Text="Refrescar"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Print Status -->
+                    <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                            CornerRadius="4" Padding="8"
+                            Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <ProgressRing IsActive="True" Width="16" Height="16"/>
+                            <TextBlock Text="Imprimiendo..."
+                                       Style="{ThemeResource CaptionTextBlockStyle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Success Message -->
+                    <Border Background="{ThemeResource SuccessFillColorDefaultBrush}"
+                            CornerRadius="4" Padding="8"
+                            Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE73E;" Foreground="{ThemeResource SuccessTextFillColorPrimaryBrush}"/>
+                            <TextBlock Text="Impresión exitosa"
+                                       Foreground="{ThemeResource SuccessTextFillColorPrimaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Error Message -->
+                    <Border Background="{ThemeResource ErrorFillColorDefaultBrush}"
+                            CornerRadius="4" Padding="8"
+                            Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE783;" Foreground="{ThemeResource ErrorTextFillColorPrimaryBrush}"/>
+                            <TextBlock Text="Error en impresión"
+                                       Foreground="{ThemeResource ErrorTextFillColorPrimaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
         <!-- Floating Action Button -->
-        <Button Style="{StaticResource FloatingActionButtonStyle}"
+        <Button Grid.Row="3" Style="{StaticResource FloatingActionButtonStyle}"
                 ToolTipService.ToolTip="Crear nueva venta">
             <Button.Content>
                 <FontIcon Glyph="&#xE710;" FontSize="20"/>
@@ -266,7 +364,6 @@
 
     <!-- Page Resources -->
     <Page.Resources>
-        <converters:BitmapToImageSourceConverter x:Key="BitmapToImageSourceConverter"/>
         <Storyboard x:Key="PageLoadStoryboard">
             <DoubleAnimation Storyboard.TargetName="SalesPageGrid"
                              Storyboard.TargetProperty="Opacity"
@@ -280,4 +377,5 @@
             </DoubleAnimation>
         </Storyboard>
     </Page.Resources>
+
 </Page>

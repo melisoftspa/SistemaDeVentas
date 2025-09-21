@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.19041</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SistemaDeVentas.Core\SistemaDeVentas.Core.csproj" />
+    <ProjectReference Include="..\SistemaDeVentas.Core.ViewModels\SistemaDeVentas.Core.ViewModels.csproj" />
     <ProjectReference Include="..\SistemaDeVentas.Infrastructure\SistemaDeVentas.Infrastructure.csproj" />
   </ItemGroup>
 

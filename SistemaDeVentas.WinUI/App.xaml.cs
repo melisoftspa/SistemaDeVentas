@@ -37,6 +37,7 @@ namespace SistemaDeVentas.WinUI
             // Register ViewModels
             services.AddTransient<LoginViewModel>();
             services.AddTransient<SalesViewModel>();
+            services.AddTransient<PrintViewModel>();
             services.AddTransient<InventoryViewModel>();
             services.AddTransient<ReportsViewModel>();
             services.AddTransient<SettingsViewModel>();
