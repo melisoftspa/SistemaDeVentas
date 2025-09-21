@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using SistemaDeVentas.Core.Domain.Entities;
+using SistemaDeVentas.Core.Domain.Entities.DTE;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SistemaDeVentas.Infrastructure.Data
@@ -14,6 +15,33 @@ namespace SistemaDeVentas.Infrastructure.Data
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
             // Configuraciones adicionales del modelo si son necesarias
+
+            // Configuraciones para campos DTE en Sale
+            modelBuilder.Entity<Sale>(entity =>
+            {
+                entity.Property(e => e.DteFolio).HasColumnName("dte_folio");
+                entity.Property(e => e.DteStatus).HasColumnName("dte_status").HasMaxLength(50);
+                entity.Property(e => e.DteType).HasColumnName("dte_type").HasMaxLength(10);
+                entity.Property(e => e.CafId).HasColumnName("caf_id");
+                entity.Property(e => e.DteSentDate).HasColumnName("dte_sent_date");
+            });
+
+            // Configuración para tabla Caf si se usa
+            modelBuilder.Entity<Caf>(entity =>
+            {
+                entity.ToTable("caf");
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.RutEmisor).HasColumnName("rut_emisor").HasMaxLength(12);
+                entity.Property(e => e.TipoDocumento).HasColumnName("tipo_dte");
+                entity.Property(e => e.FolioDesde).HasColumnName("folio_desde");
+                entity.Property(e => e.FolioHasta).HasColumnName("folio_hasta");
+                entity.Property(e => e.FechaAutorizacion).HasColumnName("fecha_autorizacion");
+                entity.Property(e => e.XmlContent).HasColumnName("xml_caf");
+                entity.Property(e => e.Activo).HasColumnName("estado");
+                entity.Property(e => e.FolioActual).HasColumnName("folio_actual");
+                entity.Property(e => e.Ambiente).HasColumnName("ambiente");
+                entity.Property(e => e.FechaVencimiento).HasColumnName("fecha_vencimiento");
+            });
         }
 
         public async Task<DataTable> ExecReturnQuery(FormattableString query)

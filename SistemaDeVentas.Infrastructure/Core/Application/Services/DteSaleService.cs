@@ -212,4 +212,18 @@ public class DteSaleService : IDteSaleService
 
         return dteDocument;
     }
+
+    /// <inheritdoc/>
+    public async Task<Guid?> GetCafIdForSaleAsync(Guid saleId)
+    {
+        var sale = await _saleRepository.GetByIdAsync(saleId);
+        return sale?.CafId;
+    }
+
+    /// <inheritdoc/>
+    public async Task<string?> GetDteXmlForSaleAsync(Guid saleId)
+    {
+        var sale = await _saleRepository.GetByIdAsync(saleId);
+        return sale?.DteXml;
+    }
 }

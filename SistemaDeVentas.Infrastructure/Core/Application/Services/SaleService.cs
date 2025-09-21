@@ -238,6 +238,22 @@ public class SaleService : ISaleService
         }
     }
 
+    public async Task<bool> UpdateSaleDteInfoAsync(Guid saleId, int dteFolio, string dteType, Guid? cafId, string dteXml)
+    {
+        var sale = await _saleRepository.GetByIdAsync(saleId);
+        if (sale == null) return false;
+
+        sale.DteFolio = dteFolio;
+        sale.DteType = dteType;
+        sale.CafId = cafId;
+        sale.DteXml = dteXml;
+        sale.DteStatus = "Generado";
+        sale.DteSentDate = DateTime.Now;
+
+        await _saleRepository.UpdateAsync(sale);
+        return true;
+    }
+
     public async Task<bool> ValidateSaleAsync(Sale sale, IEnumerable<Detail> details)
     {
         // Validar que el usuario existe

@@ -45,4 +45,18 @@ public interface IDteSaleService
     /// <param name="dteGenerated">True si DTE fue generado.</param>
     /// <param name="folio">Folio asignado.</param>
     Task UpdateSaleDteStatusAsync(Guid saleId, bool dteGenerated, int? folio = null);
+
+    /// <summary>
+    /// Obtiene el CAF usado para una venta.
+    /// </summary>
+    /// <param name="saleId">ID de la venta.</param>
+    /// <returns>ID del CAF usado.</returns>
+    Task<Guid?> GetCafIdForSaleAsync(Guid saleId);
+
+    /// <summary>
+    /// Obtiene el XML DTE generado para una venta.
+    /// </summary>
+    /// <param name="saleId">ID de la venta.</param>
+    /// <returns>XML DTE como string.</returns>
+    Task<string?> GetDteXmlForSaleAsync(Guid saleId);
 }

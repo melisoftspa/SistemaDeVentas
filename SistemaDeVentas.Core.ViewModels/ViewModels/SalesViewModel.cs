@@ -151,9 +151,9 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
         public string CurrentDateTime => DateTime.Now.ToString("dddd, dd MMMM yyyy - HH:mm");
 
         // Propiedades formateadas para la UI
-        public string FormattedSubtotal => Subtotal.ToString("C");
-        public string FormattedTax => Tax.ToString("C");
-        public string FormattedTotal => Total.ToString("C");
+        public string FormattedSubtotal => Subtotal.ToString("C", new System.Globalization.CultureInfo("es-CL"));
+        public string FormattedTax => Tax.ToString("C", new System.Globalization.CultureInfo("es-CL"));
+        public string FormattedTotal => Total.ToString("C", new System.Globalization.CultureInfo("es-CL"));
 
         // Comandos
         public ICommand AddProductCommand { get; }
@@ -210,7 +210,7 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
                         product.Name,
                         1,
                         product.SalePrice,
-                        product.Exenta ? 0 : 19 // Asumir IVA 19% si no está exento
+                        product.Exenta ? 0 : 0.19 // Asumir IVA 19% si no está exento
                     );
 
                     CartItems.Add(newItem);
@@ -289,6 +289,22 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
                 try
                 {
                     dteXml = await _dteSaleService.GenerateDteForSaleAsync(createdSale.Id, SelectedDteType);
+
+                    // Actualizar información DTE en la base de datos
+                    var folio = await _dteSaleService.GetFolioForSaleAsync(createdSale.Id);
+                    var cafId = await _dteSaleService.GetCafIdForSaleAsync(createdSale.Id);
+                    var dteXmlString = await _dteSaleService.GetDteXmlForSaleAsync(createdSale.Id);
+
+                    if (folio.HasValue && dteXmlString != null)
+                    {
+                        await _saleService.UpdateSaleDteInfoAsync(
+                            createdSale.Id,
+                            folio.Value,
+                            SelectedDteType.ToString(),
+                            cafId,
+                            dteXmlString
+                        );
+                    }
                 }
                 catch (Exception ex)
                 {

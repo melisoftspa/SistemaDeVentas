@@ -45,6 +45,13 @@ public class Sale
     public int? Folio { get; set; }
     public string? DteXml { get; set; }
 
+    // Campos DTE opcionales
+    public int? DteFolio { get; set; }
+    public string? DteStatus { get; set; }
+    public string? DteType { get; set; }
+    public Guid? CafId { get; set; }
+    public DateTime? DteSentDate { get; set; }
+
     // Navigation properties
     public User? User { get; set; }
     public List<Detail> Details { get; set; } = new List<Detail>();

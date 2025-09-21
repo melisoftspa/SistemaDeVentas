@@ -34,6 +34,17 @@ public class SalesViewModelTests
         _pdf417ServiceMock = new Mock<IPdf417Service>();
         _stampingServiceMock = new Mock<IStampingService>();
         _detailFactoryMock = new Mock<IDetailFactory>();
+
+        // Configure DetailFactory mock to return a Detail object
+        _detailFactoryMock.Setup(f => f.CreateDetail(It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()))
+                         .Returns((string name, double amount, double price, double taxRate) =>
+                             new Detail
+                             {
+                                 ProductName = name,
+                                 Amount = (int)amount,
+                                 Price = price,
+                                 Tax = price * amount * taxRate
+                             });
     }
 
     #region Constructor and Initialization Tests
@@ -756,6 +767,7 @@ public class SalesViewModelTests
             RutEmisor = "76192083-9",
             RazonSocial = "Empresa Test S.A.",
             GiroEmisor = "Venta de productos",
+            ActividadEconomica = 1,
             DireccionOrigen = "Dirección Test 123",
             ComunaOrigen = "Comuna Test"
         };
@@ -785,6 +797,7 @@ public class SalesViewModelTests
         // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e => e.PropertyName == "RUTEmisor");
+        result.Errors.Should().Contain(e => e.PropertyName == "ActividadEconomica");
     }
 
     [Fact]
@@ -844,7 +857,7 @@ public class SalesViewModelTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == "NmbItem");
+        result.Errors.Should().Contain(e => e.PropertyName == "NombreItem");
         result.Errors.Should().Contain(e => e.PropertyName == "MontoItem");
     }
 
@@ -1045,6 +1058,106 @@ public class SalesViewModelTests
         viewModel.LastProcessedSaleId.Should().Be(saleId);
         // Additional XML schema validation could be added here
     }
+
+    #region DTE Database Integration Tests
+
+    [Fact]
+    public async Task ProcessSaleAsync_ShouldUpdateSaleDteInfoInDatabase_WhenDteGeneratedSuccessfully()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        var saleId = Guid.NewGuid();
+        var createdSale = new Sale { Id = saleId, Date = DateTime.Now, Total = 1190, Tax = 190, State = false };
+        var dteXml = XDocument.Parse("<DTE><Documento>Test</Documento></DTE>");
+        var cafId = Guid.NewGuid();
+
+        viewModel.CartItems.Add(new Detail { ProductName = "Test", Amount = 1, Price = 1000, Tax = 190 });
+        viewModel.SelectedPaymentMethod = "Efectivo";
+        viewModel.SelectedDteType = 39;
+
+        _saleServiceMock.Setup(s => s.CreateSaleAsync(It.IsAny<Sale>(), It.IsAny<List<Core.Domain.Entities.Detail>>()))
+                       .ReturnsAsync(createdSale);
+        _saleServiceMock.Setup(s => s.CompleteSaleAsync(saleId)).ReturnsAsync(true);
+        _dteSaleServiceMock.Setup(d => d.GenerateDteForSaleAsync(saleId, 39)).ReturnsAsync(dteXml);
+        _dteSaleServiceMock.Setup(d => d.GetFolioForSaleAsync(saleId)).ReturnsAsync(123);
+        _dteSaleServiceMock.Setup(d => d.GetCafIdForSaleAsync(saleId)).ReturnsAsync(cafId);
+        _dteSaleServiceMock.Setup(d => d.GetDteXmlForSaleAsync(saleId)).ReturnsAsync("<DTE>Test XML</DTE>");
+        _saleServiceMock.Setup(s => s.UpdateSaleDteInfoAsync(saleId, 123, "39", cafId, "<DTE>Test XML</DTE>"))
+                       .ReturnsAsync(true);
+
+        // Act
+        await viewModel.ProcessSaleAsync();
+
+        // Assert
+        _saleServiceMock.Verify(s => s.UpdateSaleDteInfoAsync(saleId, 123, "39", cafId, "<DTE>Test XML</DTE>"), Times.Once);
+        viewModel.LastProcessedSaleId.Should().Be(saleId);
+        viewModel.ErrorMessage.Should().BeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task ProcessSaleAsync_ShouldContinueWithoutDteInfo_WhenDteInfoRetrievalFails()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        var saleId = Guid.NewGuid();
+        var createdSale = new Sale { Id = saleId, Date = DateTime.Now, Total = 1190, Tax = 190, State = false };
+        var dteXml = XDocument.Parse("<DTE><Documento>Test</Documento></DTE>");
+
+        viewModel.CartItems.Add(new Detail { ProductName = "Test", Amount = 1, Price = 1000, Tax = 190 });
+        viewModel.SelectedPaymentMethod = "Efectivo";
+        viewModel.SelectedDteType = 39;
+
+        _saleServiceMock.Setup(s => s.CreateSaleAsync(It.IsAny<Sale>(), It.IsAny<List<Core.Domain.Entities.Detail>>()))
+                       .ReturnsAsync(createdSale);
+        _saleServiceMock.Setup(s => s.CompleteSaleAsync(saleId)).ReturnsAsync(true);
+        _dteSaleServiceMock.Setup(d => d.GenerateDteForSaleAsync(saleId, 39)).ReturnsAsync(dteXml);
+        _dteSaleServiceMock.Setup(d => d.GetFolioForSaleAsync(saleId)).ReturnsAsync((int?)null); // Folio retrieval fails
+
+        // Act
+        await viewModel.ProcessSaleAsync();
+
+        // Assert
+        _saleServiceMock.Verify(s => s.UpdateSaleDteInfoAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>(),
+                                                             It.IsAny<Guid?>(), It.IsAny<string>()), Times.Never);
+        viewModel.LastProcessedSaleId.Should().Be(saleId);
+        viewModel.IsPdf417Visible.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ProcessSaleAsync_ShouldHandleUpdateSaleDteInfoFailure_AndContinue()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        var saleId = Guid.NewGuid();
+        var createdSale = new Sale { Id = saleId, Date = DateTime.Now, Total = 1190, Tax = 190, State = false };
+        var dteXml = XDocument.Parse("<DTE><Documento>Test</Documento></DTE>");
+        var cafId = Guid.NewGuid();
+
+        viewModel.CartItems.Add(new Detail { ProductName = "Test", Amount = 1, Price = 1000, Tax = 190 });
+        viewModel.SelectedPaymentMethod = "Efectivo";
+        viewModel.SelectedDteType = 39;
+
+        _saleServiceMock.Setup(s => s.CreateSaleAsync(It.IsAny<Sale>(), It.IsAny<List<Core.Domain.Entities.Detail>>()))
+                       .ReturnsAsync(createdSale);
+        _saleServiceMock.Setup(s => s.CompleteSaleAsync(saleId)).ReturnsAsync(true);
+        _dteSaleServiceMock.Setup(d => d.GenerateDteForSaleAsync(saleId, 39)).ReturnsAsync(dteXml);
+        _dteSaleServiceMock.Setup(d => d.GetFolioForSaleAsync(saleId)).ReturnsAsync(123);
+        _dteSaleServiceMock.Setup(d => d.GetCafIdForSaleAsync(saleId)).ReturnsAsync(cafId);
+        _dteSaleServiceMock.Setup(d => d.GetDteXmlForSaleAsync(saleId)).ReturnsAsync("<DTE>Test XML</DTE>");
+        _saleServiceMock.Setup(s => s.UpdateSaleDteInfoAsync(saleId, 123, "39", cafId, "<DTE>Test XML</DTE>"))
+                       .ReturnsAsync(false); // Update fails
+
+        // Act
+        await viewModel.ProcessSaleAsync();
+
+        // Assert
+        _saleServiceMock.Verify(s => s.UpdateSaleDteInfoAsync(saleId, 123, "39", cafId, "<DTE>Test XML</DTE>"), Times.Once);
+        viewModel.LastProcessedSaleId.Should().Be(saleId);
+        viewModel.IsPdf417Visible.Should().BeTrue();
+        // Should continue despite DTE info update failure
+    }
+
+    #endregion
 
     #endregion
 
