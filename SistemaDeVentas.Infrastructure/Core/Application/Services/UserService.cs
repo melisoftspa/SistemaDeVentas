@@ -30,9 +30,9 @@ public class UserService : IUserService, IAuthService
         return await _userRepository.GetByEmailAsync(email);
     }
 
-    public async Task<User?> AuthenticateAsync(string email, string password)
+    public async Task<User?> AuthenticateAsync(string username, string password)
     {
-        var user = await _userRepository.GetByEmailAsync(email);
+        var user = await _userRepository.GetByUsernameAsync(username);
         if (user == null || !user.IsActive)
         {
             return null;

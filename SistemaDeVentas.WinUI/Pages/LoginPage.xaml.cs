@@ -2,7 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
-using SistemaDeVentas.WinUI.Services;
+using CoreInterfaces = SistemaDeVentas.Core.Application.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -10,12 +10,12 @@ namespace SistemaDeVentas.WinUI.Pages;
 
 public sealed partial class LoginPage : Page
 {
-    private readonly IAuthenticationService _authService;
+    private readonly CoreInterfaces.IAuthenticationService _authService;
 
     public LoginPage()
     {
         this.InitializeComponent();
-        _authService = ((App)Application.Current).Services.GetRequiredService<IAuthenticationService>();
+        _authService = ((App)Application.Current).Services.GetRequiredService<CoreInterfaces.IAuthenticationService>();
     }
 
     private async void SignInButton_Click(object sender, RoutedEventArgs e)
@@ -23,7 +23,7 @@ public sealed partial class LoginPage : Page
         var username = UsernameTextBox.Text;
         var password = PasswordBox.Password;
 
-        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(username))
         {
             ErrorTextBlock.Text = "Por favor, ingrese usuario y contraseña";
             ErrorBorder.Visibility = Visibility.Visible;

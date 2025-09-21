@@ -1,16 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using SistemaDeVentas.Core.Application.Interfaces;
+using CoreInterfaces = SistemaDeVentas.Core.Application.Interfaces;
 
 namespace SistemaDeVentas.Core.ViewModels.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
-        private readonly IAuthenticationService _authService;
-        private readonly INavigationService _navigationService;
+        private readonly CoreInterfaces.IAuthenticationService _authService;
+        private readonly CoreInterfaces.INavigationService _navigationService;
 
-        public LoginViewModel(IAuthenticationService authService, INavigationService navigationService)
+        public LoginViewModel(CoreInterfaces.IAuthenticationService authService, CoreInterfaces.INavigationService navigationService)
         {
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));

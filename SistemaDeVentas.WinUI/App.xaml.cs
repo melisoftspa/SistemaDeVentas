@@ -1,10 +1,12 @@
 using Microsoft.UI.Xaml;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using SistemaDeVentas.Infrastructure.DependencyInjection;
 using SistemaDeVentas.Core.ViewModels.ViewModels;
 using SistemaDeVentas.WinUI.Services;
 using CoreInterfaces = SistemaDeVentas.Core.Application.Interfaces;
 using System;
+using System.IO;
 
 namespace SistemaDeVentas.WinUI
 {
@@ -24,16 +26,28 @@ namespace SistemaDeVentas.WinUI
         {
             InitializeComponent();
 
+            // Load configuration
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
             var services = new ServiceCollection();
-            
+
+            // Add configuration to services
+            services.AddSingleton<IConfiguration>(configuration);
+
+            // Get connection string from configuration
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
             // Register infrastructure services (repositories and application services)
-            services.AddInfrastructureServices("Data Source=SalesSystem.db");
-            
+            services.AddInfrastructureServices(connectionString);
+
             // Register WinUI specific services
             services.AddSingleton<CoreInterfaces.INavigationService, NavigationService>();
             services.AddSingleton<CoreInterfaces.IAuthenticationService, AuthenticationService>();
             services.AddSingleton<CoreInterfaces.IDetailFactory, DetailFactory>();
-            
+
             // Register ViewModels
             services.AddTransient<LoginViewModel>();
             services.AddTransient<SalesViewModel>();
