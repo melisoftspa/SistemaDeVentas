@@ -39,6 +39,8 @@ namespace SistemaDeVentas.WinUI
             services.AddTransient<SalesViewModel>();
             services.AddTransient<InventoryViewModel>();
             services.AddTransient<ReportsViewModel>();
+            services.AddTransient<SettingsViewModel>();
+            services.AddTransient<UserManagementViewModel>();
 
             Services = services.BuildServiceProvider();
         }

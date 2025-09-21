@@ -52,6 +52,15 @@ public class Sale
     public Guid? CafId { get; set; }
     public DateTime? DteSentDate { get; set; }
 
+    // Campos de pago
+    [StringLength(100, ErrorMessage = "El método de pago no puede exceder 100 caracteres")]
+    public string? PaymentMethod { get; set; }
+
+    [StringLength(500, ErrorMessage = "El ID de transacción no puede exceder 500 caracteres")]
+    public string? PaymentTransactionId { get; set; }
+
+    public DateTime? PaymentDate { get; set; }
+
     // Navigation properties
     public User? User { get; set; }
     public List<Detail> Details { get; set; } = new List<Detail>();
@@ -67,6 +76,18 @@ public class Sale
 
     private string GetPaymentMethodText()
     {
+        if (!string.IsNullOrEmpty(PaymentMethod))
+        {
+            return PaymentMethod switch
+            {
+                "mercadopago" => "MercadoPago",
+                "efectivo" => "Efectivo",
+                "tarjeta" => "Tarjeta",
+                "transferencia" => "Transferencia",
+                _ => PaymentMethod
+            };
+        }
+
         if (PaymentCash > 0 && PaymentOther > 0)
             return "Mixto";
         else if (PaymentCash > 0)

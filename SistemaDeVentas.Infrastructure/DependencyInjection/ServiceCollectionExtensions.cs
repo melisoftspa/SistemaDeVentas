@@ -2,11 +2,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using SistemaDeVentas.Core.Application.Interfaces;
 using SistemaDeVentas.Core.Application.Services.DTE;
+using SistemaDeVentas.Core.Domain.Entities;
 using SistemaDeVentas.Core.Domain.Entities.DTE;
 using SistemaDeVentas.Core.Domain.Interfaces;
 using SistemaDeVentas.Infrastructure.Core.Application.Services;
 using SistemaDeVentas.Infrastructure.Data;
 using SistemaDeVentas.Infrastructure.Data.Repositories;
+using SistemaDeVentas.Infrastructure.Services;
 using SistemaDeVentas.Infrastructure.Services.DTE;
 using SistemaDeVentas.Infrastructure.Services.SII;
 
@@ -67,7 +69,11 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient<ISiiStatusQueryService, SiiStatusQueryService>();
         services.AddScoped<ISiiValidationService, SiiValidationService>();
         services.AddScoped<ISiiDteWorkflowService, SiiDteWorkflowService>();
-        services.AddScoped<ISiiDteWorkflowService, SiiDteWorkflowService>();
+
+        // Registrar servicios MercadoPago
+        services.AddHttpClient<MercadoPagoService>();
+        services.AddScoped<IMercadoPagoService, MercadoPagoService>();
+        services.AddOptions<MercadoPagoSettings>();
 
         return services;
     }
@@ -84,6 +90,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<ITaxRepository, TaxRepository>();
         services.AddScoped<IDetailRepository, DetailRepository>();
+        services.AddScoped<IParameterRepository, ParameterRepository>();
+        services.AddScoped<IParameterRepository, ParameterRepository>();
 
         // Registrar servicios de aplicación
         services.AddScoped<IProductService, ProductService>();
@@ -92,6 +100,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<ITaxService, TaxService>();
         services.AddScoped<IDetailService, DetailService>();
+        services.AddScoped<IParameterService, ParameterService>();
         services.AddScoped<IDteSaleService, DteSaleService>();
         services.AddScoped<IDteSaleService, DteSaleService>();
 
@@ -122,6 +131,11 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient<ISiiDteSubmissionService, SiiDteSubmissionService>();
         services.AddHttpClient<ISiiStatusQueryService, SiiStatusQueryService>();
         services.AddScoped<ISiiValidationService, SiiValidationService>();
+
+        // Registrar servicios MercadoPago
+        services.AddHttpClient<MercadoPagoService>();
+        services.AddScoped<IMercadoPagoService, MercadoPagoService>();
+        services.AddOptions<MercadoPagoSettings>();
 
         return services;
     }

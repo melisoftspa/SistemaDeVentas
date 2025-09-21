@@ -24,6 +24,7 @@ public class SalesViewModelTests
     private readonly Mock<IPdf417Service> _pdf417ServiceMock;
     private readonly Mock<IStampingService> _stampingServiceMock;
     private readonly Mock<IDetailFactory> _detailFactoryMock;
+    private readonly Mock<IMercadoPagoService> _mercadoPagoServiceMock;
 
     public SalesViewModelTests()
     {
@@ -34,6 +35,7 @@ public class SalesViewModelTests
         _pdf417ServiceMock = new Mock<IPdf417Service>();
         _stampingServiceMock = new Mock<IStampingService>();
         _detailFactoryMock = new Mock<IDetailFactory>();
+        _mercadoPagoServiceMock = new Mock<IMercadoPagoService>();
 
         // Configure DetailFactory mock to return a Detail object
         _detailFactoryMock.Setup(f => f.CreateDetail(It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()))
@@ -75,7 +77,7 @@ public class SalesViewModelTests
         // Act & Assert
         var exception = Assert.Throws<ArgumentNullException>(() =>
             new SalesViewModel(null!, _productServiceMock.Object, _userServiceMock.Object,
-                              _dteSaleServiceMock.Object, _pdf417ServiceMock.Object, _stampingServiceMock.Object, _detailFactoryMock.Object));
+                              _dteSaleServiceMock.Object, _pdf417ServiceMock.Object, _stampingServiceMock.Object, _detailFactoryMock.Object, _mercadoPagoServiceMock.Object));
         exception.ParamName.Should().Be("saleService");
     }
 
@@ -85,7 +87,7 @@ public class SalesViewModelTests
         // Act & Assert
         var exception = Assert.Throws<ArgumentNullException>(() =>
             new SalesViewModel(_saleServiceMock.Object, null!, _userServiceMock.Object,
-                              _dteSaleServiceMock.Object, _pdf417ServiceMock.Object, _stampingServiceMock.Object, _detailFactoryMock.Object));
+                              _dteSaleServiceMock.Object, _pdf417ServiceMock.Object, _stampingServiceMock.Object, _detailFactoryMock.Object, _mercadoPagoServiceMock.Object));
         exception.ParamName.Should().Be("productService");
     }
 
@@ -95,7 +97,7 @@ public class SalesViewModelTests
         // Act & Assert
         var exception = Assert.Throws<ArgumentNullException>(() =>
             new SalesViewModel(_saleServiceMock.Object, _productServiceMock.Object, null!,
-                              _dteSaleServiceMock.Object, _pdf417ServiceMock.Object, _stampingServiceMock.Object, _detailFactoryMock.Object));
+                              _dteSaleServiceMock.Object, _pdf417ServiceMock.Object, _stampingServiceMock.Object, _detailFactoryMock.Object, _mercadoPagoServiceMock.Object));
         exception.ParamName.Should().Be("userService");
     }
 
@@ -105,7 +107,7 @@ public class SalesViewModelTests
         // Act & Assert
         var exception = Assert.Throws<ArgumentNullException>(() =>
             new SalesViewModel(_saleServiceMock.Object, _productServiceMock.Object, _userServiceMock.Object,
-                              null!, _pdf417ServiceMock.Object, _stampingServiceMock.Object, _detailFactoryMock.Object));
+                              null!, _pdf417ServiceMock.Object, _stampingServiceMock.Object, _detailFactoryMock.Object, _mercadoPagoServiceMock.Object));
         exception.ParamName.Should().Be("dteSaleService");
     }
 
@@ -115,7 +117,7 @@ public class SalesViewModelTests
         // Act & Assert
         var exception = Assert.Throws<ArgumentNullException>(() =>
             new SalesViewModel(_saleServiceMock.Object, _productServiceMock.Object, _userServiceMock.Object,
-                              _dteSaleServiceMock.Object, null!, _stampingServiceMock.Object, _detailFactoryMock.Object));
+                              _dteSaleServiceMock.Object, null!, _stampingServiceMock.Object, _detailFactoryMock.Object, _mercadoPagoServiceMock.Object));
         exception.ParamName.Should().Be("pdf417Service");
     }
 
@@ -125,7 +127,7 @@ public class SalesViewModelTests
         // Act & Assert
         var exception = Assert.Throws<ArgumentNullException>(() =>
             new SalesViewModel(_saleServiceMock.Object, _productServiceMock.Object, _userServiceMock.Object,
-                              _dteSaleServiceMock.Object, _pdf417ServiceMock.Object, null!, _detailFactoryMock.Object));
+                              _dteSaleServiceMock.Object, _pdf417ServiceMock.Object, null!, _detailFactoryMock.Object, _mercadoPagoServiceMock.Object));
         exception.ParamName.Should().Be("stampingService");
     }
 
@@ -1161,6 +1163,166 @@ public class SalesViewModelTests
 
     #endregion
 
+    #region MercadoPago Integration Tests
+
+    [Fact]
+    public void Constructor_ShouldThrowArgumentNullException_WhenMercadoPagoServiceIsNull()
+    {
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentNullException>(() =>
+            new SalesViewModel(_saleServiceMock.Object, _productServiceMock.Object, _userServiceMock.Object,
+                              _dteSaleServiceMock.Object, _pdf417ServiceMock.Object, _stampingServiceMock.Object,
+                              _detailFactoryMock.Object, null!));
+        exception.ParamName.Should().Be("mercadoPagoService");
+    }
+
+    [Fact]
+    public void CanProcessMercadoPago_ShouldReturnFalse_WhenCartIsEmpty()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+
+        // Act
+        var canProcess = viewModel.CanProcessMercadoPago();
+
+        // Assert
+        canProcess.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CanProcessMercadoPago_ShouldReturnFalse_WhenTotalIsZero()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        viewModel.CartItems.Add(new Detail { Amount = 1, Price = 0, Tax = 0 });
+
+        // Act
+        var canProcess = viewModel.CanProcessMercadoPago();
+
+        // Assert
+        canProcess.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CanProcessMercadoPago_ShouldReturnFalse_WhenMercadoPagoPaymentInProgress()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        viewModel.CartItems.Add(new Detail { Amount = 1, Price = 1000, Tax = 190 });
+        viewModel.MercadoPagoStatus = "pending";
+
+        // Act
+        var canProcess = viewModel.CanProcessMercadoPago();
+
+        // Assert
+        canProcess.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CanProcessMercadoPago_ShouldReturnTrue_WhenValidConditions()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        viewModel.CartItems.Add(new Detail { Amount = 1, Price = 1000, Tax = 190 });
+
+        // Act
+        var canProcess = viewModel.CanProcessMercadoPago();
+
+        // Assert
+        canProcess.Should().BeTrue();
+    }
+
+    [Fact]
+    public void CanCancelMercadoPago_ShouldReturnFalse_WhenNoOrderId()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+
+        // Act
+        var canCancel = viewModel.CanCancelMercadoPago();
+
+        // Assert
+        canCancel.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CanCancelMercadoPago_ShouldReturnTrue_WhenOrderIdExistsAndPaymentInProgress()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        viewModel.MercadoPagoOrderId = "123456789";
+        viewModel.MercadoPagoStatus = "pending";
+
+        // Act
+        var canCancel = viewModel.CanCancelMercadoPago();
+
+        // Assert
+        canCancel.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ProcessMercadoPagoAsync_ShouldProcessPaymentSuccessfully_WhenMercadoPagoSucceeds()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        var saleId = Guid.NewGuid();
+        var createdSale = new Sale { Id = saleId, Date = DateTime.Now, Total = 1190, Tax = 190, State = false };
+
+        viewModel.CartItems.Add(new Detail { ProductName = "Test", Amount = 1, Price = 1000, Tax = 190 });
+
+        _mercadoPagoServiceMock.Setup(m => m.ProcessPaymentAsync(It.IsAny<Sale>(), "mercadopago", null))
+                              .ReturnsAsync(new PaymentResult { Success = true, TransactionId = "MP123456" });
+        _saleServiceMock.Setup(s => s.CreateSaleAsync(It.IsAny<Sale>(), It.IsAny<List<Core.Domain.Entities.Detail>>()))
+                       .ReturnsAsync(createdSale);
+        _saleServiceMock.Setup(s => s.CompleteSaleAsync(saleId)).ReturnsAsync(true);
+        _saleServiceMock.Setup(s => s.UpdateSalePaymentInfoAsync(saleId, "mercadopago", "MP123456")).ReturnsAsync(true);
+        _dteSaleServiceMock.Setup(d => d.GenerateDteForSaleAsync(saleId, 39)).ReturnsAsync(XDocument.Parse("<DTE>Test</DTE>"));
+
+        // Act
+        await viewModel.ProcessMercadoPagoAsync();
+
+        // Assert
+        _mercadoPagoServiceMock.Verify(m => m.ProcessPaymentAsync(It.IsAny<Sale>(), "mercadopago", null), Times.Once);
+        _saleServiceMock.Verify(s => s.UpdateSalePaymentInfoAsync(saleId, "mercadopago", "MP123456"), Times.Once);
+        viewModel.LastProcessedSaleId.Should().Be(saleId);
+    }
+
+    [Fact]
+    public async Task ProcessMercadoPagoAsync_ShouldSetError_WhenMercadoPagoFails()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        viewModel.CartItems.Add(new Detail { ProductName = "Test", Amount = 1, Price = 1000, Tax = 190 });
+
+        _mercadoPagoServiceMock.Setup(m => m.ProcessPaymentAsync(It.IsAny<Sale>(), "mercadopago", null))
+                              .ReturnsAsync(new PaymentResult { Success = false, ErrorMessage = "Pago rechazado" });
+
+        // Act
+        await viewModel.ProcessMercadoPagoAsync();
+
+        // Assert
+        viewModel.ErrorMessage.Should().Contain("Pago rechazado");
+    }
+
+    [Fact]
+    public async Task CancelMercadoPagoAsync_ShouldCancelOrderSuccessfully()
+    {
+        // Arrange
+        var viewModel = CreateViewModel();
+        viewModel.MercadoPagoOrderId = "123456789";
+
+        _mercadoPagoServiceMock.Setup(m => m.CancelOrderAsync("123456789")).ReturnsAsync(true);
+
+        // Act
+        await viewModel.CancelMercadoPagoAsync();
+
+        // Assert
+        _mercadoPagoServiceMock.Verify(m => m.CancelOrderAsync("123456789"), Times.Once);
+        viewModel.MercadoPagoStatus.Should().Be("cancelled");
+    }
+
+    #endregion
+
     private SalesViewModel CreateViewModel()
     {
         return new SalesViewModel(
@@ -1170,6 +1332,7 @@ public class SalesViewModelTests
             _dteSaleServiceMock.Object,
             _pdf417ServiceMock.Object,
             _stampingServiceMock.Object,
-            _detailFactoryMock.Object);
+            _detailFactoryMock.Object,
+            _mercadoPagoServiceMock.Object);
     }
 }

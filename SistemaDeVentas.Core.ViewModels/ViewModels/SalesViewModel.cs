@@ -26,10 +26,11 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
         private readonly IPdf417Service _pdf417Service;
         private readonly IStampingService _stampingService;
         private readonly IDetailFactory _detailFactory;
+        private readonly IMercadoPagoService _mercadoPagoService;
 
         public SalesViewModel(ISaleService saleService, IProductService productService, IUserService userService,
                               IDteSaleService dteSaleService, IPdf417Service pdf417Service, IStampingService stampingService,
-                              IDetailFactory detailFactory)
+                              IDetailFactory detailFactory, IMercadoPagoService mercadoPagoService)
         {
             _saleService = saleService ?? throw new ArgumentNullException(nameof(saleService));
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
@@ -38,15 +39,18 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
             _pdf417Service = pdf417Service ?? throw new ArgumentNullException(nameof(pdf417Service));
             _stampingService = stampingService ?? throw new ArgumentNullException(nameof(stampingService));
             _detailFactory = detailFactory ?? throw new ArgumentNullException(nameof(detailFactory));
+            _mercadoPagoService = mercadoPagoService ?? throw new ArgumentNullException(nameof(mercadoPagoService));
 
             Title = "Punto de Venta";
             CartItems = new ObservableCollection<IDetail>();
-            
+
             AddProductCommand = new RelayCommand(async () => await AddProductAsync());
             RemoveItemCommand = new RelayCommand<IDetail>(async (item) => await RemoveItemAsync(item));
             ProcessSaleCommand = new RelayCommand(async () => await ProcessSaleAsync(), CanProcessSale);
+            ProcessMercadoPagoCommand = new RelayCommand(async () => await ProcessMercadoPagoAsync(), CanProcessMercadoPago);
             ClearCartCommand = new RelayCommand(async () => await ClearCartAsync());
             ShowPdf417Command = new RelayCommand(async () => await ShowPdf417Async());
+            CancelMercadoPagoCommand = new RelayCommand(async () => await CancelMercadoPagoAsync(), CanCancelMercadoPago);
             
             // Actualizar totales cuando cambie el carrito
             CartItems.CollectionChanged += (s, e) => UpdateTotals();
@@ -155,12 +159,47 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
         public string FormattedTax => Tax.ToString("C", new System.Globalization.CultureInfo("es-CL"));
         public string FormattedTotal => Total.ToString("C", new System.Globalization.CultureInfo("es-CL"));
 
+        // Propiedades MercadoPago
+        private string _mercadoPagoQrCode;
+        public string MercadoPagoQrCode
+        {
+            get => _mercadoPagoQrCode;
+            set => SetProperty(ref _mercadoPagoQrCode, value);
+        }
+
+        private string _mercadoPagoOrderId;
+        public string MercadoPagoOrderId
+        {
+            get => _mercadoPagoOrderId;
+            set => SetProperty(ref _mercadoPagoOrderId, value);
+        }
+
+        private string _mercadoPagoStatus;
+        public string MercadoPagoStatus
+        {
+            get => _mercadoPagoStatus;
+            set
+            {
+                if (SetProperty(ref _mercadoPagoStatus, value))
+                {
+                    OnPropertyChanged(nameof(IsMercadoPagoPaymentInProgress));
+                    OnPropertyChanged(nameof(IsMercadoPagoPaymentCompleted));
+                    OnPropertyChanged(nameof(CanCancelMercadoPago));
+                }
+            }
+        }
+
+        public bool IsMercadoPagoPaymentInProgress => MercadoPagoStatus == "pending";
+        public bool IsMercadoPagoPaymentCompleted => MercadoPagoStatus == "paid";
+
         // Comandos
         public ICommand AddProductCommand { get; }
         public ICommand RemoveItemCommand { get; }
         public ICommand ProcessSaleCommand { get; }
+        public ICommand ProcessMercadoPagoCommand { get; }
         public ICommand ClearCartCommand { get; }
         public ICommand ShowPdf417Command { get; }
+        public ICommand CancelMercadoPagoCommand { get; }
 
         internal async Task AddProductAsync()
         {
@@ -344,6 +383,11 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
             IsPdf417Visible = false;
             Pdf417Bitmap = null;
             LastProcessedSaleId = null;
+
+            // Limpiar estado MercadoPago
+            MercadoPagoQrCode = string.Empty;
+            MercadoPagoOrderId = string.Empty;
+            MercadoPagoStatus = string.Empty;
         }
 
         internal async Task ShowPdf417Async()
@@ -386,6 +430,170 @@ namespace SistemaDeVentas.Core.ViewModels.ViewModels
             OnPropertyChanged(nameof(FormattedTotal));
 
             ((RelayCommand)ProcessSaleCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)ProcessMercadoPagoCommand).RaiseCanExecuteChanged();
+        }
+
+        internal bool CanProcessMercadoPago()
+        {
+            return CartItems.Count > 0 && Total > 0 && !IsBusy && !IsMercadoPagoPaymentInProgress;
+        }
+
+        internal async Task ProcessMercadoPagoAsync()
+        {
+            if (IsBusy || IsMercadoPagoPaymentInProgress) return;
+
+            try
+            {
+                IsBusy = true;
+                ClearError();
+
+                // Crear orden temporal para MercadoPago
+                var tempSale = new Core.Domain.Entities.Sale
+                {
+                    Date = DateTime.Now,
+                    Total = Total,
+                    Tax = Tax,
+                    State = false
+                };
+
+                // Procesar pago con MercadoPago
+                var paymentResult = await _mercadoPagoService.ProcessPaymentAsync(tempSale, "mercadopago", null);
+
+                if (paymentResult.Success)
+                {
+                    // Pago exitoso - proceder con la venta completa
+                    await ProcessSaleAfterMercadoPagoPayment(paymentResult);
+                }
+                else
+                {
+                    SetError($"Error en pago MercadoPago: {paymentResult.ErrorMessage}");
+                }
+            }
+            catch (Exception ex)
+            {
+                SetError($"Error procesando pago MercadoPago: {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async Task ProcessSaleAfterMercadoPagoPayment(PaymentResult paymentResult)
+        {
+            try
+            {
+                // Crear la venta completa
+                var sale = new Core.Domain.Entities.Sale
+                {
+                    Date = DateTime.Now,
+                    Total = Total,
+                    Tax = Tax,
+                    State = false
+                };
+
+                var details = CartItems.Select(item => new Core.Domain.Entities.Detail
+                {
+                    Amount = item.Amount,
+                    Price = item.Price,
+                    Total = item.Total
+                }).ToList();
+
+                var createdSale = await _saleService.CreateSaleAsync(sale, details);
+                var saleCompleted = await _saleService.CompleteSaleAsync(createdSale.Id);
+
+                if (!saleCompleted)
+                {
+                    SetError("Error al completar la venta después del pago");
+                    return;
+                }
+
+                // Actualizar información de pago en la venta
+                await _saleService.UpdateSalePaymentInfoAsync(createdSale.Id, "mercadopago", paymentResult.TransactionId);
+
+                // Procesar DTE normalmente
+                await ProcessDteForSale(createdSale.Id);
+
+                // Limpiar estado MercadoPago
+                MercadoPagoQrCode = string.Empty;
+                MercadoPagoOrderId = string.Empty;
+                MercadoPagoStatus = string.Empty;
+
+                // Mostrar mensaje de éxito
+                // TODO: Implementar notificación de éxito
+            }
+            catch (Exception ex)
+            {
+                SetError($"Error finalizando venta: {ex.Message}");
+            }
+        }
+
+        private async Task ProcessDteForSale(Guid saleId)
+        {
+            try
+            {
+                var dteXml = await _dteSaleService.GenerateDteForSaleAsync(saleId, SelectedDteType);
+
+                var folio = await _dteSaleService.GetFolioForSaleAsync(saleId);
+                var cafId = await _dteSaleService.GetCafIdForSaleAsync(saleId);
+                var dteXmlString = await _dteSaleService.GetDteXmlForSaleAsync(saleId);
+
+                if (folio.HasValue && dteXmlString != null)
+                {
+                    await _saleService.UpdateSaleDteInfoAsync(
+                        saleId,
+                        folio.Value,
+                        SelectedDteType.ToString(),
+                        cafId,
+                        dteXmlString
+                    );
+                }
+
+                LastProcessedSaleId = saleId;
+                IsPdf417Visible = true;
+                await ShowPdf417Async();
+            }
+            catch (Exception ex)
+            {
+                SetError($"Error generando DTE: {ex.Message}");
+            }
+        }
+
+        internal bool CanCancelMercadoPago()
+        {
+            return !string.IsNullOrEmpty(MercadoPagoOrderId) && IsMercadoPagoPaymentInProgress;
+        }
+
+        internal async Task CancelMercadoPagoAsync()
+        {
+            if (string.IsNullOrEmpty(MercadoPagoOrderId)) return;
+
+            try
+            {
+                IsBusy = true;
+                ClearError();
+
+                var cancelled = await _mercadoPagoService.CancelOrderAsync(MercadoPagoOrderId);
+
+                if (cancelled)
+                {
+                    MercadoPagoStatus = "cancelled";
+                    MercadoPagoQrCode = string.Empty;
+                    SetError("Pago MercadoPago cancelado");
+                }
+                else
+                {
+                    SetError("Error al cancelar el pago MercadoPago");
+                }
+            }
+            catch (Exception ex)
+            {
+                SetError($"Error cancelando pago: {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         /// <summary>

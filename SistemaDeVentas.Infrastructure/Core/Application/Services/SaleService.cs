@@ -254,6 +254,19 @@ public class SaleService : ISaleService
         return true;
     }
 
+    public async Task<bool> UpdateSalePaymentInfoAsync(Guid saleId, string paymentMethod, string? transactionId)
+    {
+        var sale = await _saleRepository.GetByIdAsync(saleId);
+        if (sale == null) return false;
+
+        sale.PaymentMethod = paymentMethod;
+        sale.PaymentTransactionId = transactionId;
+        sale.PaymentDate = DateTime.Now;
+
+        await _saleRepository.UpdateAsync(sale);
+        return true;
+    }
+
     public async Task<bool> ValidateSaleAsync(Sale sale, IEnumerable<Detail> details)
     {
         // Validar que el usuario existe

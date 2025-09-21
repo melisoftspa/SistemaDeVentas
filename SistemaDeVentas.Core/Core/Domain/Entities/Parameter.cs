@@ -10,4 +10,8 @@ public partial class Parameter
     public string? Name { get; set; }
     public string? Type { get; set; }
     public string? Value { get; set; }
+
+    // Propiedades adicionales para compatibilidad con configuración
+    public string Key => Name ?? string.Empty;
+    public string Description => $"{Module ?? "General"} - {Name ?? "Sin nombre"}";
 }
