@@ -1,24 +1,22 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Data;
 using System.Reflection;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-using SistemaDeVentas.Models;
+using SistemaDeVentas.Core.Domain.Entities;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
-namespace SistemaDeVentas.Data
+namespace SistemaDeVentas.Infrastructure.Data
 {
     public partial class SalesSystemDbContext
     {
-        public virtual DbSet<UpdateProduct> UpdateProducts { get; set; }
-
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UpdateProduct>().HasNoKey();
+            // Configuraciones adicionales del modelo si son necesarias
         }
 
-        public Task<DataTable> ExecReturnQuery(FormattableString query)
+        public async Task<DataTable> ExecReturnQuery(FormattableString query)
         {
             using (var command = this.Database.GetDbConnection().CreateCommand())
             {
@@ -29,7 +27,7 @@ namespace SistemaDeVentas.Data
                 table.Load(result);
                 // returning DataTable (instead of DbDataReader), cause can't use DbDataReader after CloseConnection().
                 if (command.Connection.State.Equals(ConnectionState.Open)) { command.Connection.Close(); }
-                return Task.FromResult(table);
+                return table;
             }
         }
 
@@ -76,11 +74,28 @@ namespace SistemaDeVentas.Data
                 {
                     foreach (var data in param)
                     {
-                        T newT1 = (T)(object)data.Value.ToString();
-                        entities.Add(newT1);
+                        // output handling later
                     }
                 }
-
+                while (reader.Read())
+                {
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        var value = reader.GetValue(i);
+                        if (properties.Length > 0)
+                        {
+                            // try to map simple types
+                            if (properties.Length == 1)
+                            {
+                                entities.Add((T)Convert.ChangeType(value, typeof(T)));
+                            }
+                            else
+                            {
+                                // complex mapping skipped
+                            }
+                        }
+                    }
+                }
                 if (command.Connection.State.Equals(ConnectionState.Open)) { command.Connection.Close(); }
             }
             return entities;

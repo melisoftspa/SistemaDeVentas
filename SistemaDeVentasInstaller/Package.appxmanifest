@@ -8,8 +8,8 @@
 
   <Identity
     Name="ce674773-9ddd-43da-a167-a7d0cf93c4ec"
-    Publisher="CN=jmeli"
-    Version="1.2.2.0" />
+    Publisher="CN=Gemini ERP"
+    Version="1.2.6.0" />
 
   <Properties>
     <DisplayName>SistemaDeVentasInstaller</DisplayName>

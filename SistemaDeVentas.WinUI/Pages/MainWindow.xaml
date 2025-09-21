@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="SistemaDeVentas.WinUI.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SistemaDeVentas.WinUI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+
+    <Grid Loaded="MainWindow_Loaded">
+        <NavigationView x:Name="MainNavigationView"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="True"
+                        PaneDisplayMode="Left"
+                        SelectionChanged="NavigationView_SelectionChanged"
+                        ItemInvoked="NavigationView_ItemInvoked">
+            
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Punto de Venta" 
+                                    Tag="Sales"
+                                    Icon="Shop">
+                    <NavigationViewItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Modifiers="Control" Key="Number1"/>
+                    </NavigationViewItem.KeyboardAccelerators>
+                </NavigationViewItem>
+                
+                <NavigationViewItem Content="Inventario" 
+                                    Tag="Inventory"
+                                    Icon="Package">
+                    <NavigationViewItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Modifiers="Control" Key="Number2"/>
+                    </NavigationViewItem.KeyboardAccelerators>
+                </NavigationViewItem>
+                
+                <NavigationViewItem Content="Reportes" 
+                                    Tag="Reports"
+                                    Icon="BarChart">
+                    <NavigationViewItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Modifiers="Control" Key="Number3"/>
+                    </NavigationViewItem.KeyboardAccelerators>
+                </NavigationViewItem>
+                
+                <NavigationViewItemSeparator/>
+                
+                <NavigationViewItem Content="Clientes" 
+                                    Tag="Customers"
+                                    Icon="People"/>
+                
+                <NavigationViewItem Content="Proveedores" 
+                                    Tag="Suppliers"
+                                    Icon="ContactInfo"/>
+                
+                <NavigationViewItemSeparator/>
+                
+                <NavigationViewItem Content="Usuarios" 
+                                    Tag="Users"
+                                    Icon="Contact"/>
+                
+                <NavigationViewItem Content="Configuración" 
+                                    Tag="Settings"
+                                    Icon="Setting"/>
+            </NavigationView.MenuItems>
+
+            <NavigationView.Header>
+                <Grid Height="48" Padding="24,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" 
+                                Orientation="Horizontal" 
+                                VerticalAlignment="Center">
+                        <TextBlock x:Name="PageTitleTextBlock" 
+                                   Text="Sistema de Ventas" 
+                                   Style="{StaticResource TitleTextBlockStyle}" 
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" 
+                                Orientation="Horizontal" 
+                                VerticalAlignment="Center" 
+                                Spacing="12">
+                        
+                        <!-- Información del usuario -->
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                                BorderThickness="1" 
+                                CornerRadius="16" 
+                                Padding="12,6">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PersonPicture Width="24" Height="24" 
+                                               DisplayName="Usuario Actual"/>
+                                <TextBlock Text="Usuario Actual" 
+                                           Style="{StaticResource BodyTextBlockStyle}" 
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Botón de cerrar sesión -->
+                        <Button x:Name="LogoutButton" 
+                                Content="Cerrar Sesión" 
+                                Click="LogoutButton_Click"
+                                Style="{StaticResource SubtleButtonStyle}">
+                            <Button.KeyboardAccelerators>
+                                <KeyboardAccelerator Modifiers="Control,Shift" Key="Q"/>
+                            </Button.KeyboardAccelerators>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </NavigationView.Header>
+
+            <Frame x:Name="ContentFrame" 
+                   Margin="0,8,0,0"/>
+        </NavigationView>
+
+        <!-- Overlay de carga global -->
+        <Border x:Name="LoadingOverlay" 
+                Background="{ThemeResource SmokeFillColorDefaultBrush}" 
+                Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" 
+                        VerticalAlignment="Center">
+                <ProgressRing IsActive="True" 
+                              Width="48" 
+                              Height="48"/>
+                <TextBlock Text="Cargando..." 
+                           Style="{StaticResource BodyTextBlockStyle}" 
+                           Margin="0,16,0,0" 
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Barra de estado -->
+        <Border Grid.Row="1" 
+                Background="{ThemeResource LayerFillColorDefaultBrush}" 
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                BorderThickness="0,1,0,0" 
+                Height="32" 
+                VerticalAlignment="Bottom">
+            <Grid Padding="16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock x:Name="StatusTextBlock" 
+                           Grid.Column="0" 
+                           Text="Listo" 
+                           Style="{StaticResource CaptionTextBlockStyle}" 
+                           VerticalAlignment="Center"/>
+
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal" 
+                            Spacing="16">
+                    <TextBlock Text="🟢 Conectado" 
+                               Style="{StaticResource CaptionTextBlockStyle}" 
+                               VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TimeTextBlock"
+                               Text="00:00:00"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

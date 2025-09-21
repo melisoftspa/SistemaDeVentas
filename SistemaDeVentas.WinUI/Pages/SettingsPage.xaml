@@ -1,0 +1,12 @@
+<Page
+    x:Class="SistemaDeVentas.WinUI.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SistemaDeVentas.WinUI.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <TextBlock Text="Página de Configuración" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+    </Grid>
+</Page>

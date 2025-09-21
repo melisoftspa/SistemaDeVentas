@@ -144,7 +144,7 @@ namespace Pdf417EncoderLibraryExt
         /// <summary>
         /// Barcode matrix (each bar is one bool item)
         /// </summary>
-        public bool[,] Pdf417BarcodeMatrix;
+        public bool[,]? Pdf417BarcodeMatrix;
 
         // Pdf417 constants
         private const int MaxCodewords = 929;
@@ -192,20 +192,20 @@ namespace Pdf417EncoderLibraryExt
         private const int GliCharacterSet = 927;
 
         // saved barcode string and binary data
-        private String BarcodeStringData;
-        private byte[] BarcodeBinaryData;
+        private String? BarcodeStringData;
+        private byte[]? BarcodeBinaryData;
         private int BarcodeDataLength;
         private int BarcodeDataPos;
 
         // encoding input data into codewords
         private EncodingMode _EncodingMode;
         private TextEncodingMode _TextEncodingMode;
-        private List<int> DataCodewords;
+        private List<int>? DataCodewords;
 
         // error correction level, length and codewords
         private ErrorCorrectionLevel ErrorCorrectionLevel;
         private int ErrorCorrectionLength;
-        private int[] ErrCorrCodewords;
+        private int[]? ErrCorrCodewords;
 
         /// <summary>
         /// Encoding control (Default: Auto)
@@ -353,7 +353,7 @@ namespace Pdf417EncoderLibraryExt
         /// <summary>
         /// ISO character set ISO-8859-n (n=1 to 9, 13 and 15) (Default: null)
         /// </summary>
-        public string GlobalLabelIDCharacterSet
+        public string? GlobalLabelIDCharacterSet
         {
             get
             {
@@ -380,7 +380,7 @@ namespace Pdf417EncoderLibraryExt
             }
         }
         // Global Label Identifier character set
-        private string _GlobalLabelIDCharacterSet;
+        private string? _GlobalLabelIDCharacterSet;
         private int _GlobalLabelIDCharacterSetNo;
 
         /// <summary>

@@ -1,0 +1,65 @@
+<Page
+    x:Class="SistemaDeVentas.WinUI.Pages.MainShell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SistemaDeVentas.WinUI.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <NavigationView x:Name="NavView"
+                        Style="{StaticResource FluentNavigationViewStyle}"
+                        PaneDisplayMode="Left"
+                        IsBackButtonVisible="Collapsed"
+                        OpenPaneLength="280"
+                        SelectionChanged="NavView_SelectionChanged">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Inicio" Icon="Home" Tag="home"/>
+                <NavigationViewItem Content="Ventas" Icon="Money" Tag="sales"/>
+                <NavigationViewItem Content="Inventario" Icon="Edit" Tag="inventory"/>
+                <NavigationViewItem Content="Reportes" Icon="DataBarVertical" Tag="reports"/>
+            </NavigationView.MenuItems>
+
+            <NavigationView.Header>
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="0,0,0,1"
+                        Padding="24,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Sistema de Ventas"
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                            <TextBlock x:Name="BreadcrumbText"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                            <Button Style="{StaticResource SubtleButtonStyle}">
+                                <Button.Content>
+                                    <FontIcon Glyph="&#xE713;" FontSize="16"/>
+                                </Button.Content>
+                            </Button>
+                            <Button Style="{StaticResource SubtleButtonStyle}"
+                                    Click="LogoutButton_Click">
+                                <Button.Content>
+                                    <FontIcon Glyph="&#xE7E8;" FontSize="16"/>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </NavigationView.Header>
+
+            <Frame x:Name="ContentFrame"
+                   Navigated="ContentFrame_Navigated"/>
+        </NavigationView>
+    </Grid>
+</Page>
