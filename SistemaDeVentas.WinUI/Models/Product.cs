@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.WinUI.Models
 {
-    public class Product
+    public class Product : IProduct
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -61,5 +62,18 @@ namespace SistemaDeVentas.WinUI.Models
         public bool IsLowStock => Stock <= Minimum;
         public bool IsExpired => Expiration.HasValue && Expiration.Value < DateTime.Now;
         public string DisplayName => $"{Name} - ${SalePrice:F2}";
+
+        // Interface implementation
+        public string? Barcode
+        {
+            get => BarCode;
+            set => BarCode = value;
+        }
+
+        public bool IsActive
+        {
+            get => State;
+            set => State = value;
+        }
     }
 }

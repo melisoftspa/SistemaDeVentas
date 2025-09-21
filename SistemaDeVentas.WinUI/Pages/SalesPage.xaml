@@ -3,7 +3,7 @@
     x:Class="SistemaDeVentas.WinUI.Pages.SalesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:viewmodels="using:SistemaDeVentas.WinUI.ViewModels"
+    xmlns:viewmodels="using:SistemaDeVentas.Core.ViewModels.ViewModels"
     xmlns:converters="using:SistemaDeVentas.WinUI.Converters">
 
     <Grid>

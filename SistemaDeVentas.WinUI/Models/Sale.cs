@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.WinUI.Models
 {
-    public class Sale
+    public class Sale : ISale
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -42,8 +43,8 @@ namespace SistemaDeVentas.WinUI.Models
         public bool State { get; set; } = true;
 
         // Navigation properties
-        public User? User { get; set; }
-        public List<Detail> Details { get; set; } = new List<Detail>();
+        public IUser? User { get; set; }
+        public List<IDetail> Details { get; set; } = new List<IDetail>();
 
         // Computed properties
         public double Subtotal => Details.Sum(d => d.Total);

@@ -177,11 +177,13 @@ public abstract class DteBuilderService : IDteBuilderService
             return false;
         }
 
-        // Verificar elementos requeridos
-        return root.Element("IdDoc") != null &&
-               root.Element("Emisor") != null &&
-               root.Element("Receptor") != null &&
-               root.Element("Totales") != null;
+        // Verificar elementos requeridos en Encabezado
+        var encabezado = root.Element("Encabezado");
+        return encabezado != null &&
+               encabezado.Element("IdDoc") != null &&
+               encabezado.Element("Emisor") != null &&
+               encabezado.Element("Receptor") != null &&
+               encabezado.Element("Totales") != null;
     }
 
     /// <summary>

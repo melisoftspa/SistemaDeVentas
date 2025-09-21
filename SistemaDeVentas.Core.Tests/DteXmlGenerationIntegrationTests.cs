@@ -143,8 +143,8 @@ public class DteXmlGenerationIntegrationTests
                     NumeroLineaDetalle = 1,
                     NombreItem = "Producto Afecto",
                     CantidadItem = 1m,
-                    PrecioItem = 100000m,
-                    MontoItem = 100000m
+                    PrecioItem = 119000m,
+                    MontoItem = 119000m
                 }
             }
         };
@@ -229,8 +229,8 @@ public class DteXmlGenerationIntegrationTests
                     NumeroLineaDetalle = 1,
                     NombreItem = "Producto Boleta",
                     CantidadItem = 1m,
-                    PrecioItem = 50000m,
-                    MontoItem = 50000m
+                    PrecioItem = 59500m,
+                    MontoItem = 59500m
                 }
             }
         };

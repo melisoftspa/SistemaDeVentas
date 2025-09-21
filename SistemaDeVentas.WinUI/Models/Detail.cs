@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.WinUI.Models
 {
-    public class Detail
+    public class Detail : IDetail
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -35,8 +36,8 @@ namespace SistemaDeVentas.WinUI.Models
         public bool State { get; set; } = true;
 
         // Navigation properties
-        public Sale? Sale { get; set; }
-        public Product? Product { get; set; }
+        public ISale? Sale { get; set; }
+        public IProduct? Product { get; set; }
 
         // Computed properties
         public double Subtotal => Amount * Price;

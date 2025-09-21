@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace SistemaDeVentas.WinUI.ViewModels
+namespace SistemaDeVentas.Core.ViewModels.ViewModels
 {
     public abstract class BaseViewModel : INotifyPropertyChanged
     {

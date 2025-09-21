@@ -5,16 +5,17 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Linq;
 using Microsoft.UI.Xaml.Media.Imaging;
-using SistemaDeVentas.WinUI.Models;
 using SistemaDeVentas.Core.Application.Interfaces;
 using SistemaDeVentas.Core.Application.Services.DTE;
+using SistemaDeVentas.Core.Domain.Interfaces;
+using SistemaDeVentas.Core.Domain.Entities;
 using SistemaDeVentas.Infrastructure.Services.DTE;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using Windows.Storage.Streams;
 
-namespace SistemaDeVentas.WinUI.ViewModels
+namespace SistemaDeVentas.Core.ViewModels.ViewModels
 {
     public class SalesViewModel : BaseViewModel
     {
@@ -24,9 +25,11 @@ namespace SistemaDeVentas.WinUI.ViewModels
         private readonly IDteSaleService _dteSaleService;
         private readonly IPdf417Service _pdf417Service;
         private readonly IStampingService _stampingService;
+        private readonly IDetailFactory _detailFactory;
 
         public SalesViewModel(ISaleService saleService, IProductService productService, IUserService userService,
-                              IDteSaleService dteSaleService, IPdf417Service pdf417Service, IStampingService stampingService)
+                              IDteSaleService dteSaleService, IPdf417Service pdf417Service, IStampingService stampingService,
+                              IDetailFactory detailFactory)
         {
             _saleService = saleService ?? throw new ArgumentNullException(nameof(saleService));
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
@@ -34,12 +37,13 @@ namespace SistemaDeVentas.WinUI.ViewModels
             _dteSaleService = dteSaleService ?? throw new ArgumentNullException(nameof(dteSaleService));
             _pdf417Service = pdf417Service ?? throw new ArgumentNullException(nameof(pdf417Service));
             _stampingService = stampingService ?? throw new ArgumentNullException(nameof(stampingService));
+            _detailFactory = detailFactory ?? throw new ArgumentNullException(nameof(detailFactory));
 
             Title = "Punto de Venta";
-            CartItems = new ObservableCollection<Detail>();
+            CartItems = new ObservableCollection<IDetail>();
             
             AddProductCommand = new RelayCommand(async () => await AddProductAsync());
-            RemoveItemCommand = new RelayCommand<Detail>(async (item) => await RemoveItemAsync(item));
+            RemoveItemCommand = new RelayCommand<IDetail>(async (item) => await RemoveItemAsync(item));
             ProcessSaleCommand = new RelayCommand(async () => await ProcessSaleAsync(), CanProcessSale);
             ClearCartCommand = new RelayCommand(async () => await ClearCartAsync());
             ShowPdf417Command = new RelayCommand(async () => await ShowPdf417Async());
@@ -48,8 +52,8 @@ namespace SistemaDeVentas.WinUI.ViewModels
             CartItems.CollectionChanged += (s, e) => UpdateTotals();
         }
 
-        private ObservableCollection<Detail> _cartItems = new();
-        public ObservableCollection<Detail> CartItems
+        private ObservableCollection<IDetail> _cartItems = new();
+        public ObservableCollection<IDetail> CartItems
         {
             get => _cartItems;
             set => SetProperty(ref _cartItems, value);
@@ -158,7 +162,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
         public ICommand ClearCartCommand { get; }
         public ICommand ShowPdf417Command { get; }
 
-        private async Task AddProductAsync()
+        internal async Task AddProductAsync()
         {
             try
             {
@@ -202,14 +206,13 @@ namespace SistemaDeVentas.WinUI.ViewModels
                 }
                 else
                 {
-                    var newItem = new Detail
-                    {
-                        ProductName = product.Name,
-                        Amount = 1,
-                        Price = product.SalePrice,
-                        Tax = product.Exenta ? 0 : 19 // Asumir IVA 19% si no está exento
-                    };
-                    
+                    var newItem = _detailFactory.CreateDetail(
+                        product.Name,
+                        1,
+                        product.SalePrice,
+                        product.Exenta ? 0 : 19 // Asumir IVA 19% si no está exento
+                    );
+
                     CartItems.Add(newItem);
                 }
 
@@ -226,7 +229,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
             }
         }
 
-        private async Task RemoveItemAsync(Detail? item)
+        internal async Task RemoveItemAsync(IDetail? item)
         {
             if (item != null && CartItems.Contains(item))
             {
@@ -235,7 +238,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
             }
         }
 
-        private bool CanProcessSale()
+        internal bool CanProcessSale()
         {
             var validDteTypes = new[] { 33, 34, 39, 41 };
             return CartItems.Count > 0 &&
@@ -244,7 +247,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
                    !IsBusy;
         }
 
-        private async Task ProcessSaleAsync()
+        internal async Task ProcessSaleAsync()
         {
             if (IsBusy) return;
 
@@ -316,7 +319,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
             }
         }
 
-        private async Task ClearCartAsync()
+        internal async Task ClearCartAsync()
         {
             CartItems.Clear();
             UpdateTotals();
@@ -327,7 +330,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
             LastProcessedSaleId = null;
         }
 
-        private async Task ShowPdf417Async()
+        internal async Task ShowPdf417Async()
         {
             if (!LastProcessedSaleId.HasValue) return;
 
@@ -355,7 +358,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
             }
         }
 
-        private void UpdateTotals()
+        internal void UpdateTotals()
         {
             Subtotal = CartItems.Sum(item => item.Subtotal);
             Tax = CartItems.Sum(item => item.TaxAmount);

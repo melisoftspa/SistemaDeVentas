@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using SistemaDeVentas.WinUI.Services;
-using SistemaDeVentas.WinUI.Models;
+using SistemaDeVentas.Core.Application.Interfaces;
 
-namespace SistemaDeVentas.WinUI.ViewModels
+namespace SistemaDeVentas.Core.ViewModels.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {

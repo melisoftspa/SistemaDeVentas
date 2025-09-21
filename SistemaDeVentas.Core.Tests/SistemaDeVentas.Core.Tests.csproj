@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SistemaDeVentas.Core\SistemaDeVentas.Core.csproj" />
+    <ProjectReference Include="..\SistemaDeVentas.Infrastructure\SistemaDeVentas.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -37,7 +37,7 @@ public class DteIntegrationTests
         var certificate = CreateTestCertificate();
 
         _certificateServiceMock.Setup(c => c.ValidateCertificateForSigning(certificate)).Returns(true);
-        _certificateServiceMock.Setup(c => c.GetPrivateKey(certificate)).Returns(certificate.GetRSAPrivateKey());
+        _certificateServiceMock.Setup(c => c.GetPrivateKey(certificate)).Returns(System.Security.Cryptography.RSA.Create());
 
         // Act
         var xmlDocument = _builder.BuildXml(dteDocument);
@@ -70,7 +70,7 @@ public class DteIntegrationTests
         var certificate = CreateTestCertificate();
 
         _certificateServiceMock.Setup(c => c.ValidateCertificateForSigning(certificate)).Returns(true);
-        _certificateServiceMock.Setup(c => c.GetPrivateKey(certificate)).Returns(certificate.GetRSAPrivateKey());
+        _certificateServiceMock.Setup(c => c.GetPrivateKey(certificate)).Returns(System.Security.Cryptography.RSA.Create());
 
         // Act
         var signedDocument = _signatureService.SignXmlDocument(xmlDocument, certificate);

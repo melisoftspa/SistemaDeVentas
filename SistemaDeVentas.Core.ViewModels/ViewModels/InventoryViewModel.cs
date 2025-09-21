@@ -3,11 +3,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using SistemaDeVentas.WinUI.Models;
 using SistemaDeVentas.Core.Application.Interfaces;
-using WinUIProduct = SistemaDeVentas.WinUI.Models.Product;
+using SistemaDeVentas.Core.Domain.Interfaces;
+using SistemaDeVentas.Core.Domain.Entities;
 
-namespace SistemaDeVentas.WinUI.ViewModels
+namespace SistemaDeVentas.Core.ViewModels.ViewModels
 {
     public class InventoryViewModel : BaseViewModel
     {
@@ -18,27 +18,27 @@ namespace SistemaDeVentas.WinUI.ViewModels
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
 
             Title = "Inventario";
-            Products = new ObservableCollection<Product>();
+            Products = new ObservableCollection<IProduct>();
             
             LoadProductsCommand = new RelayCommand(async () => await LoadProductsAsync());
             SearchCommand = new RelayCommand(async () => await SearchProductsAsync());
             AddProductCommand = new RelayCommand(async () => await AddProductAsync());
-            EditProductCommand = new RelayCommand<WinUIProduct>(async (product) => await EditProductAsync(product));
-            DeleteProductCommand = new RelayCommand<WinUIProduct>(async (product) => await DeleteProductAsync(product));
+            EditProductCommand = new RelayCommand<IProduct>(async (product) => await EditProductAsync(product));
+            DeleteProductCommand = new RelayCommand<IProduct>(async (product) => await DeleteProductAsync(product));
             
             // Cargar productos al inicializar
             _ = LoadProductsAsync();
         }
 
-        private ObservableCollection<WinUIProduct> _products = new();
-        public ObservableCollection<WinUIProduct> Products
+        private ObservableCollection<IProduct> _products = new();
+        public ObservableCollection<IProduct> Products
         {
             get => _products;
             set => SetProperty(ref _products, value);
         }
 
-        private ObservableCollection<SistemaDeVentas.WinUI.Models.Category> _categories = new();
-        public ObservableCollection<SistemaDeVentas.WinUI.Models.Category> Categories
+        private ObservableCollection<ICategory> _categories = new();
+        public ObservableCollection<ICategory> Categories
         {
             get => _categories;
             set => SetProperty(ref _categories, value);
@@ -57,8 +57,8 @@ namespace SistemaDeVentas.WinUI.ViewModels
             }
         }
 
-        private SistemaDeVentas.WinUI.Models.Category? _selectedCategory;
-        public SistemaDeVentas.WinUI.Models.Category? SelectedCategory
+        private ICategory? _selectedCategory;
+        public ICategory? SelectedCategory
         {
             get => _selectedCategory;
             set
@@ -133,7 +133,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
                 Products.Clear();
                 foreach (var product in products)
                 {
-                    Products.Add(product.ToWinUIProduct());
+                    Products.Add(product);
                 }
 
                 TotalItems = products.Count();
@@ -174,7 +174,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
                 Products.Clear();
                 foreach (var product in filteredProducts)
                 {
-                    Products.Add(product.ToWinUIProduct());
+                    Products.Add(product);
                 }
 
                 TotalItems = filteredProducts.Count();
@@ -233,7 +233,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
                 Products.Clear();
                 foreach (var product in filteredProducts)
                 {
-                    Products.Add(product.ToWinUIProduct());
+                    Products.Add(product);
                 }
 
                 TotalItems = filteredProducts.Count();
@@ -262,7 +262,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
             await Task.CompletedTask;
         }
 
-        private async Task EditProductAsync(WinUIProduct? product)
+        private async Task EditProductAsync(IProduct? product)
         {
             if (product == null) return;
 
@@ -271,7 +271,7 @@ namespace SistemaDeVentas.WinUI.ViewModels
             await Task.CompletedTask;
         }
 
-        private async Task DeleteProductAsync(WinUIProduct? product)
+        private async Task DeleteProductAsync(IProduct? product)
         {
             if (product == null) return;
 

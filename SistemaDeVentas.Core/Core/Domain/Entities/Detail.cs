@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.Core.Domain.Entities;
 
-public class Detail
+public class Detail : IDetail
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     

@@ -17,19 +17,25 @@ public class DteSaleService : IDteSaleService
     private readonly IProductRepository _productRepository;
     private readonly IDteProcessingService _dteProcessingService;
     private readonly ICafRepository _cafRepository;
+    private readonly IDteFileStorageService _dteFileStorageService;
+    private readonly IPdfGeneratorService _pdfGeneratorService;
 
     public DteSaleService(
         ISaleRepository saleRepository,
         IDetailRepository detailRepository,
         IProductRepository productRepository,
         IDteProcessingService dteProcessingService,
-        ICafRepository cafRepository)
+        ICafRepository cafRepository,
+        IDteFileStorageService dteFileStorageService,
+        IPdfGeneratorService pdfGeneratorService)
     {
         _saleRepository = saleRepository;
         _detailRepository = detailRepository;
         _productRepository = productRepository;
         _dteProcessingService = dteProcessingService;
         _cafRepository = cafRepository;
+        _dteFileStorageService = dteFileStorageService;
+        _pdfGeneratorService = pdfGeneratorService;
     }
 
     /// <inheritdoc/>
@@ -60,6 +66,13 @@ public class DteSaleService : IDteSaleService
 
         // Generar DTE completo (construir, firmar y timbrar)
         var dteXml = await _dteProcessingService.BuildSignAndStampDteWithSettings(dteDocument, tipoDocumento);
+
+        // Guardar XML físicamente
+        await _dteFileStorageService.SaveDteXmlAsync(saleId, dteDocument.IdDoc.Folio, dteXml);
+
+        // Generar y guardar PDF
+        var pdfBytes = _pdfGeneratorService.GenerateBoletaPdf(dteDocument, false);
+        await _dteFileStorageService.SaveDtePdfAsync(saleId, dteDocument.IdDoc.Folio, pdfBytes);
 
         // Actualizar estado de la venta
         await UpdateSaleDteStatusAsync(saleId, true, dteDocument.IdDoc.Folio, dteXml.ToString());

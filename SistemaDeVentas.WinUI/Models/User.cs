@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.WinUI.Models
 {
-    public class User
+    public class User : IUser
     {
         public int Id { get; set; }
 
@@ -37,7 +38,7 @@ namespace SistemaDeVentas.WinUI.Models
         public bool IsActive { get; set; } = true;
 
         // Navigation properties
-        public List<Sale> Sales { get; set; } = new List<Sale>();
+        public List<ISale> Sales { get; set; } = new List<ISale>();
 
         // Computed properties
         public string DisplayName => $"{Name} ({Username})";

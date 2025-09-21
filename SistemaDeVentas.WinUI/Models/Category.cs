@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.WinUI.Models
 {
-    public class Category
+    public class Category : ICategory
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 

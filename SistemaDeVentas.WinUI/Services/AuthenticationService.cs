@@ -1,25 +1,25 @@
 using System;
 using System.Threading.Tasks;
-using SistemaDeVentas.Core.Application.Interfaces;
+using CoreInterfaces = SistemaDeVentas.Core.Application.Interfaces;
 using SistemaDeVentas.Core.Domain.Entities;
-using SistemaDeVentas.Infrastructure.Core.Application.Services;
+using SistemaDeVentas.Core.Application.Interfaces;
 
 namespace SistemaDeVentas.WinUI.Services;
 
-public class AuthenticationService : IAuthenticationService
+public class AuthenticationService : CoreInterfaces.IAuthenticationService
 {
     private readonly IAuthService _authService;
     private User? _currentUser;
 
     public AuthenticationService(IAuthService authService)
     {
-        _authService = authService;
+        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
     public bool IsAuthenticated => _currentUser != null;
     public User? CurrentUser => _currentUser;
 
-    public async Task<AuthenticationResult> LoginAsync(string username, string password)
+    public async Task<CoreInterfaces.AuthenticationResult> LoginAsync(string username, string password)
     {
         try
         {
@@ -27,13 +27,13 @@ public class AuthenticationService : IAuthenticationService
             if (user != null)
             {
                 _currentUser = user;
-                return AuthenticationResult.Success(user);
+                return CoreInterfaces.AuthenticationResult.Success(user);
             }
-            return AuthenticationResult.Failure("Credenciales inválidas");
+            return CoreInterfaces.AuthenticationResult.Failure("Credenciales inválidas");
         }
         catch (Exception ex)
         {
-            return AuthenticationResult.Failure($"Error de autenticación: {ex.Message}");
+            return CoreInterfaces.AuthenticationResult.Failure($"Error de autenticación: {ex.Message}");
         }
     }
 

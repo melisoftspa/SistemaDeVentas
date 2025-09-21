@@ -47,9 +47,8 @@ public class DteDocumentValidator : AbstractValidator<DteDocument>
             .Must(dte =>
             {
                 var totalMontoItems = dte.Detalles.Sum(d => d.MontoItem ?? 0);
-                var totalNetoExento = (dte.Totales.MontoNeto ?? 0) + (dte.Totales.MontoExento ?? 0);
-                return Math.Abs(totalMontoItems - totalNetoExento) < 0.01m;
+                return Math.Abs(totalMontoItems - dte.Totales.MontoTotal) < 0.01m;
             })
-            .WithMessage("La suma de los montos de los detalles no coincide con el monto neto + exento.");
+            .WithMessage("La suma de los montos de los detalles no coincide con el monto total.");
     }
 }

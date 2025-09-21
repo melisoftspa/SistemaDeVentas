@@ -51,6 +51,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IStampingService, StampingService>();
         services.AddScoped<IDteProcessingService, DteProcessingService>();
         services.AddScoped<IPdf417Service, Pdf417Service>();
+        services.AddScoped<IDteFileStorageService, DteFileStorageService>();
+        services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
+        services.AddScoped<IDteFileStorageService, DteFileStorageService>();
 
         // Registrar configuración DTE
         services.AddOptions<DteSettings>();

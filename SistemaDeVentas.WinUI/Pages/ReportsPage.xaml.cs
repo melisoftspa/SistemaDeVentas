@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
-using SistemaDeVentas.WinUI.ViewModels;
+using SistemaDeVentas.Core.ViewModels.ViewModels;
 
 namespace SistemaDeVentas.WinUI.Pages
 {

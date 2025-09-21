@@ -1,8 +1,9 @@
 using Microsoft.UI.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using SistemaDeVentas.Infrastructure.DependencyInjection;
-using SistemaDeVentas.WinUI.ViewModels;
+using SistemaDeVentas.Core.ViewModels.ViewModels;
 using SistemaDeVentas.WinUI.Services;
+using CoreInterfaces = SistemaDeVentas.Core.Application.Interfaces;
 using System;
 
 namespace SistemaDeVentas.WinUI
@@ -29,8 +30,9 @@ namespace SistemaDeVentas.WinUI
             services.AddInfrastructureServices("Data Source=SalesSystem.db");
             
             // Register WinUI specific services
-            services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<IAuthenticationService, AuthenticationService>();
+            services.AddSingleton<CoreInterfaces.INavigationService, NavigationService>();
+            services.AddSingleton<CoreInterfaces.IAuthenticationService, AuthenticationService>();
+            services.AddSingleton<CoreInterfaces.IDetailFactory, DetailFactory>();
             
             // Register ViewModels
             services.AddTransient<LoginViewModel>();

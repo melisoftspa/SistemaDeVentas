@@ -30,7 +30,7 @@ public class FacturaAfectaBuilderTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal("Documento", result.Root?.Name.LocalName);
-        Assert.Equal("33", result.Root?.Element("IdDoc")?.Element("TipoDTE")?.Value);
+        Assert.Equal("33", result.Root?.Element("Encabezado")?.Element("IdDoc")?.Element("TipoDTE")?.Value);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class FacturaAfectaBuilderTests
     {
         // Arrange
         var xmlDocument = CreateValidFacturaAfectaXml();
-        var totales = xmlDocument.Root?.Element("Totales");
+        var totales = xmlDocument.Root?.Element("Encabezado")?.Element("Totales");
         totales?.Element("IVA")?.Remove(); // Remover IVA, que debe estar en afecta
 
         // Act
@@ -78,7 +78,7 @@ public class FacturaAfectaBuilderTests
     {
         // Arrange
         var xmlDocument = CreateValidFacturaAfectaXml();
-        var ivaElement = xmlDocument.Root?.Element("Totales")?.Element("IVA");
+        var ivaElement = xmlDocument.Root?.Element("Encabezado")?.Element("Totales")?.Element("IVA");
         if (ivaElement != null)
         {
             ivaElement.Value = ""; // IVA vacío
@@ -148,27 +148,29 @@ public class FacturaAfectaBuilderTests
     {
         return XDocument.Parse(@"
             <Documento>
-                <IdDoc>
-                    <TipoDTE>33</TipoDTE>
-                    <Folio>12345</Folio>
-                    <FchEmis>2023-01-01</FchEmis>
-                </IdDoc>
-                <Emisor>
-                    <RUTEmisor>11111111-1</RUTEmisor>
-                    <RznSoc>Empresa Emisora S.A.</RznSoc>
-                    <GiroEmis>Venta de productos</GiroEmis>
-                    <Acteco>620100</Acteco>
-                </Emisor>
-                <Receptor>
-                    <RUTRecep>22222222-2</RUTRecep>
-                    <RznSocRecep>Cliente S.A.</RznSocRecep>
-                </Receptor>
-                <Totales>
-                    <MntNeto>100000</MntNeto>
-                    <TasaIVA>19</TasaIVA>
-                    <IVA>19000</IVA>
-                    <MntTotal>119000</MntTotal>
-                </Totales>
+                <Encabezado>
+                    <IdDoc>
+                        <TipoDTE>33</TipoDTE>
+                        <Folio>12345</Folio>
+                        <FchEmis>2023-01-01</FchEmis>
+                    </IdDoc>
+                    <Emisor>
+                        <RUTEmisor>11111111-1</RUTEmisor>
+                        <RznSoc>Empresa Emisora S.A.</RznSoc>
+                        <GiroEmis>Venta de productos</GiroEmis>
+                        <Acteco>620100</Acteco>
+                    </Emisor>
+                    <Receptor>
+                        <RUTRecep>22222222-2</RUTRecep>
+                        <RznSocRecep>Cliente S.A.</RznSocRecep>
+                    </Receptor>
+                    <Totales>
+                        <MntNeto>100000</MntNeto>
+                        <TasaIVA>19</TasaIVA>
+                        <IVA>19000</IVA>
+                        <MntTotal>119000</MntTotal>
+                    </Totales>
+                </Encabezado>
                 <Detalle>
                     <NroLinDet>1</NroLinDet>
                     <NmbItem>Producto Afecto</NmbItem>

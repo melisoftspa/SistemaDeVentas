@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using SistemaDeVentas.Core.Domain.Exceptions.DTE;
 
 namespace SistemaDeVentas.Infrastructure.Services.SII;
 
@@ -24,23 +25,34 @@ public class SiiAuthenticationService : ISiiAuthenticationService
     /// </summary>
     public async Task<string> GetSeedAsync(int ambiente = 0)
     {
-        var url = GetSeedUrl(ambiente);
+        try
+        {
+            var url = GetSeedUrl(ambiente);
 
-        var soapEnvelope = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            var soapEnvelope = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"">
     <soapenv:Body>
         <getSeed xmlns=""http://www.sii.cl/wsdl""/>
     </soapenv:Body>
 </soapenv:Envelope>";
 
-        var content = new StringContent(soapEnvelope, Encoding.UTF8, "text/xml");
-        content.Headers.Add("SOAPAction", "");
+            var content = new StringContent(soapEnvelope, Encoding.UTF8, "text/xml");
+            content.Headers.Add("SOAPAction", "");
 
-        var response = await _httpClient.PostAsync(url, content);
-        response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
 
-        var responseContent = await response.Content.ReadAsStringAsync();
-        return ExtractSeedFromSoapResponse(responseContent);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            return ExtractSeedFromSoapResponse(responseContent);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new SiiCommunicationException("Error al obtener semilla de autenticación del SII", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new SiiCommunicationException("Error inesperado al obtener semilla del SII", ex);
+        }
     }
 
     /// <summary>
@@ -48,9 +60,11 @@ public class SiiAuthenticationService : ISiiAuthenticationService
     /// </summary>
     public async Task<string> GetTokenAsync(string signedSeedXml, int ambiente = 0)
     {
-        var url = GetTokenUrl(ambiente);
+        try
+        {
+            var url = GetTokenUrl(ambiente);
 
-        var soapEnvelope = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
+            var soapEnvelope = $@"<?xml version=""1.0"" encoding=""UTF-8""?>
 <soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"">
     <soapenv:Body>
         <getToken xmlns=""http://www.sii.cl/wsdl"">
@@ -59,14 +73,23 @@ public class SiiAuthenticationService : ISiiAuthenticationService
     </soapenv:Body>
 </soapenv:Envelope>";
 
-        var content = new StringContent(soapEnvelope, Encoding.UTF8, "text/xml");
-        content.Headers.Add("SOAPAction", "");
+            var content = new StringContent(soapEnvelope, Encoding.UTF8, "text/xml");
+            content.Headers.Add("SOAPAction", "");
 
-        var response = await _httpClient.PostAsync(url, content);
-        response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync(url, content);
+            response.EnsureSuccessStatusCode();
 
-        var responseContent = await response.Content.ReadAsStringAsync();
-        return ExtractTokenFromSoapResponse(responseContent);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            return ExtractTokenFromSoapResponse(responseContent);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new SiiCommunicationException("Error al obtener token de autenticación del SII", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new SiiCommunicationException("Error inesperado al obtener token del SII", ex);
+        }
     }
 
     /// <summary>
@@ -91,15 +114,37 @@ public class SiiAuthenticationService : ISiiAuthenticationService
 
     private string ExtractSeedFromSoapResponse(string soapResponse)
     {
-        var doc = XDocument.Parse(soapResponse);
-        var seedElement = doc.Descendants().FirstOrDefault(e => e.Name.LocalName == "SEMILLA");
-        return seedElement?.Value ?? throw new InvalidOperationException("No se pudo extraer la semilla de la respuesta SOAP");
+        try
+        {
+            var doc = XDocument.Parse(soapResponse);
+            var seedElement = doc.Descendants().FirstOrDefault(e => e.Name.LocalName == "SEMILLA");
+            return seedElement?.Value ?? throw new SiiCommunicationException("No se pudo extraer la semilla de la respuesta SOAP del SII");
+        }
+        catch (SiiCommunicationException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new SiiCommunicationException("Error al procesar la respuesta SOAP del SII para obtener semilla", ex);
+        }
     }
 
     private string ExtractTokenFromSoapResponse(string soapResponse)
     {
-        var doc = XDocument.Parse(soapResponse);
-        var tokenElement = doc.Descendants().FirstOrDefault(e => e.Name.LocalName == "TOKEN");
-        return tokenElement?.Value ?? throw new InvalidOperationException("No se pudo extraer el token de la respuesta SOAP");
+        try
+        {
+            var doc = XDocument.Parse(soapResponse);
+            var tokenElement = doc.Descendants().FirstOrDefault(e => e.Name.LocalName == "TOKEN");
+            return tokenElement?.Value ?? throw new SiiCommunicationException("No se pudo extraer el token de la respuesta SOAP del SII");
+        }
+        catch (SiiCommunicationException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new SiiCommunicationException("Error al procesar la respuesta SOAP del SII para obtener token", ex);
+        }
     }
 }

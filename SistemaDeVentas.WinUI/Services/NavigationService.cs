@@ -1,10 +1,11 @@
 using System;
 using Microsoft.UI.Xaml.Controls;
 using SistemaDeVentas.WinUI.Pages;
+using SistemaDeVentas.Core.Application.Interfaces;
 
 namespace SistemaDeVentas.WinUI.Services
 {
-    public class NavigationService : INavigationService
+    public class NavigationService : Core.Application.Interfaces.INavigationService
     {
         private Frame? _frame;
 

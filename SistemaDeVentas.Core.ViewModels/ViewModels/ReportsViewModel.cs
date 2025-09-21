@@ -2,10 +2,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using SistemaDeVentas.WinUI.Models;
 using SistemaDeVentas.Core.Application.Interfaces;
 
-namespace SistemaDeVentas.WinUI.ViewModels
+namespace SistemaDeVentas.Core.ViewModels.ViewModels
 {
     public class ReportsViewModel : BaseViewModel
     {

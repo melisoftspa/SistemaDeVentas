@@ -42,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SistemaDeVentas.Core.ViewModels\SistemaDeVentas.Core.ViewModels.csproj" />
     <ProjectReference Include="..\SistemaDeVentas.Core\SistemaDeVentas.Core.csproj" />
     <ProjectReference Include="..\SistemaDeVentas.Infrastructure\SistemaDeVentas.Infrastructure.csproj" />
   </ItemGroup>

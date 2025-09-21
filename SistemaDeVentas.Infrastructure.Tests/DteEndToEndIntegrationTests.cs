@@ -48,8 +48,8 @@ public class DteEndToEndIntegrationTests
         var caf = CreateTestCaf();
 
         _certificateServiceMock.Setup(c => c.ValidateCertificateForSigning(certificate)).Returns(true);
-        _certificateServiceMock.Setup(c => c.GetPrivateKey(certificate)).Returns(certificate.GetRSAPrivateKey());
-        _cafRepositoryMock.Setup(r => r.GetCafByTipoDteAndRut(TipoDte.FacturaAfecta, "11111111-1")).ReturnsAsync(caf);
+        _certificateServiceMock.Setup(c => c.GetPrivateKey(certificate)).Returns(System.Security.Cryptography.RSA.Create());
+        _cafRepositoryMock.Setup(r => r.ObtenerPorTipoDocumentoAsync((int)TipoDte.FacturaAfecta, 0, "11111111-1")).ReturnsAsync(caf);
 
         // Act
         // 1. Construir XML DTE
@@ -59,7 +59,7 @@ public class DteEndToEndIntegrationTests
         var signedDocument = _signatureService.SignXmlDocument(xmlDocument, certificate);
 
         // 3. Timbrar (agregar TED)
-        var stampedDocument = _stampingService.RequestElectronicStamp(signedDocument, caf, certificate);
+        var stampedDocument = _stampingService.RequestElectronicStamp(signedDocument, "11111111-1", 0).Result;
 
         // 4. Generar PDF417
         var pdf417Bitmap = _stampingService.GeneratePdf417Image(stampedDocument);
@@ -96,8 +96,8 @@ public class DteEndToEndIntegrationTests
         var caf = CreateTestCafBoleta();
 
         _certificateServiceMock.Setup(c => c.ValidateCertificateForSigning(certificate)).Returns(true);
-        _certificateServiceMock.Setup(c => c.GetPrivateKey(certificate)).Returns(certificate.GetRSAPrivateKey());
-        _cafRepositoryMock.Setup(r => r.GetCafByTipoDteAndRut(TipoDte.BoletaAfecta, "11111111-1")).ReturnsAsync(caf);
+        _certificateServiceMock.Setup(c => c.GetPrivateKey(certificate)).Returns(System.Security.Cryptography.RSA.Create());
+        _cafRepositoryMock.Setup(r => r.ObtenerPorTipoDocumentoAsync((int)TipoDte.BoletaAfecta, 0, "11111111-1")).ReturnsAsync(caf);
 
         // Act
         // 1. Construir XML DTE
@@ -107,7 +107,7 @@ public class DteEndToEndIntegrationTests
         var signedDocument = _signatureService.SignXmlDocument(xmlDocument, certificate);
 
         // 3. Timbrar (agregar TED)
-        var stampedDocument = _stampingService.RequestElectronicStamp(signedDocument, caf, certificate);
+        var stampedDocument = _stampingService.RequestElectronicStamp(signedDocument, "11111111-1", 0).Result;
 
         // 4. Generar PDF417
         var pdf417Bitmap = _stampingService.GeneratePdf417Image(stampedDocument);
@@ -151,21 +151,20 @@ public class DteEndToEndIntegrationTests
     {
         return new Sale
         {
-            Id = 1,
+            Id = Guid.NewGuid(),
             Date = DateTime.Now,
-            Total = 119000m,
-            CustomerId = 1,
-            UserId = 1,
-            Details = new List<SaleDetail>
+            Total = 119000.0,
+            IdUser = Guid.NewGuid(),
+            Details = new List<Detail>
             {
-                new SaleDetail
+                new Detail
                 {
-                    Id = 1,
-                    SaleId = 1,
-                    ProductId = 1,
-                    Quantity = 1,
-                    UnitPrice = 100000m,
-                    Total = 100000m
+                    Id = Guid.NewGuid(),
+                    IdSale = Guid.NewGuid(),
+                    IdProduct = Guid.NewGuid(),
+                    Amount = 1.0,
+                    Price = 100000.0,
+                    Total = 100000.0
                 }
             }
         };
@@ -281,12 +280,15 @@ public class DteEndToEndIntegrationTests
         return new Caf
         {
             Id = 1,
-            TipoDte = TipoDte.FacturaAfecta,
+            TipoDocumento = (int)TipoDte.FacturaAfecta,
+            Ambiente = 0,
             RutEmisor = "11111111-1",
             FolioDesde = 1,
             FolioHasta = 1000,
             XmlContent = "<CAF><DA><RE>11111111-1</RE><RS>Test</RS><TD>33</TD><RNG><D>1</D><H>1000</H></RNG><FA>2023-01-01</FA></DA><FRMA>signature</FRMA></CAF>",
-            FechaAutorizacion = DateTime.Now
+            FechaAutorizacion = DateTime.Now,
+            FechaVencimiento = DateTime.Now.AddYears(1),
+            Activo = true
         };
     }
 
@@ -295,12 +297,15 @@ public class DteEndToEndIntegrationTests
         return new Caf
         {
             Id = 2,
-            TipoDte = TipoDte.BoletaAfecta,
+            TipoDocumento = (int)TipoDte.BoletaAfecta,
+            Ambiente = 0,
             RutEmisor = "11111111-1",
             FolioDesde = 1,
             FolioHasta = 1000,
             XmlContent = "<CAF><DA><RE>11111111-1</RE><RS>Test</RS><TD>39</TD><RNG><D>1</D><H>1000</H></RNG><FA>2023-01-01</FA></DA><FRMA>signature</FRMA></CAF>",
-            FechaAutorizacion = DateTime.Now
+            FechaAutorizacion = DateTime.Now,
+            FechaVencimiento = DateTime.Now.AddYears(1),
+            Activo = true
         };
     }
 }
