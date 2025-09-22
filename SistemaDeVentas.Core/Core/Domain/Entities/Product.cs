@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.Core.Domain.Entities;
@@ -8,8 +9,9 @@ public class Product : IProduct
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? CreatedAt { get; set; }
 
+    [NotMapped]
     public DateTime? UpdatedAt { get; set; }
 
     public bool IsActive { get; set; } = true;
@@ -61,7 +63,7 @@ public class Product : IProduct
     public Subcategory? Subcategory { get; set; }
 
     // Computed properties
-    public double PriceWithTax => Tax != null ? Price * (1 + (double)Tax.Percentage / 100) : Price;
+    public double PriceWithTax => Price; // Simplified, as Tax.Percentage removed
     public bool IsLowStock => Stock <= Minimum;
     public bool IsExpired => Expiration.HasValue && Expiration.Value < DateTime.Now;
     public bool IsExpiringSoon => Expiration.HasValue && Expiration.Value <= DateTime.Now.AddDays(30);

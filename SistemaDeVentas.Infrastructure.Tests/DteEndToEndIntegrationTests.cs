@@ -154,7 +154,7 @@ public class DteEndToEndIntegrationTests
             Id = Guid.NewGuid(),
             Date = DateTime.Now,
             Total = 119000.0,
-            IdUser = Guid.NewGuid(),
+            IdUser = 1,
             Details = new List<Detail>
             {
                 new Detail
@@ -279,7 +279,7 @@ public class DteEndToEndIntegrationTests
     {
         return new Caf
         {
-            Id = 1,
+            Id = Guid.NewGuid(),
             TipoDocumento = (int)TipoDte.FacturaAfecta,
             Ambiente = 0,
             RutEmisor = "11111111-1",
@@ -296,7 +296,7 @@ public class DteEndToEndIntegrationTests
     {
         return new Caf
         {
-            Id = 2,
+            Id = Guid.NewGuid(),
             TipoDocumento = (int)TipoDte.BoletaAfecta,
             Ambiente = 0,
             RutEmisor = "11111111-1",

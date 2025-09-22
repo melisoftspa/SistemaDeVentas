@@ -34,9 +34,15 @@ public partial class SalesSystemDbContext : DbContext, ISalesDbContext
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<Caf> Cafs { get; set; }
     public virtual DbSet<CertificateData> CertificateDatas { get; set; }
+    public virtual DbSet<DteLog> DteLogs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=.\\;Database=SalesSystemDB;Integrated Security=SSPI;Trust Server Certificate=true");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;Database=SalesSystemDB;User Id=sa;Password=;Trust Server Certificate=true;");
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

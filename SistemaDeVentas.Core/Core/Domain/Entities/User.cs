@@ -1,20 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaDeVentas.Core.Domain.Entities;
 
 public class User
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public int Id { get; set; }
 
+    [NotMapped]
+    public DateTime? CreatedAt { get; set; }
+
+    [NotMapped]
     [Required(ErrorMessage = "El email es requerido")]
     [EmailAddress(ErrorMessage = "El email no tiene un formato válido")]
     [StringLength(100, ErrorMessage = "El email no puede exceder 100 caracteres")]
     public string Email { get; set; } = string.Empty;
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+    [NotMapped]
     public DateTime? UpdatedAt { get; set; }
 
     [Required(ErrorMessage = "El nombre de usuario es requerido")]
@@ -34,6 +38,7 @@ public class User
 
     public bool InInvoice { get; set; }
 
+    [NotMapped]
     public bool IsActive { get; set; } = true;
 
     // Navigation properties

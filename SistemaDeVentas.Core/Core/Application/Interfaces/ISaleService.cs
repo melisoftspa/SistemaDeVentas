@@ -6,7 +6,7 @@ public interface ISaleService
 {
     Task<IEnumerable<Sale>> GetAllSalesAsync();
     Task<Sale?> GetSaleByIdAsync(Guid id);
-    Task<IEnumerable<Sale>> GetSalesByUserAsync(Guid userId);
+    Task<IEnumerable<Sale>> GetSalesByUserAsync(int userId);
     Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime startDate, DateTime endDate);
     Task<Sale> CreateSaleAsync(Sale sale, IEnumerable<Detail> details);
     Task<Sale> UpdateSaleAsync(Sale sale);

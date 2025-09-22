@@ -39,10 +39,13 @@ public class SiiDteSubmissionService : ISiiDteSubmissionService
 </soapenv:Envelope>";
 
         var content = new StringContent(soapEnvelope, Encoding.UTF8, "text/xml");
-        content.Headers.Add("Authorization", $"Bearer {token}");
         content.Headers.Add("SOAPAction", "");
 
-        var response = await _httpClient.PostAsync(url, content);
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Content = content;
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
         var responseContent = await response.Content.ReadAsStringAsync();

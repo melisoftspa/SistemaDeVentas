@@ -120,10 +120,10 @@ public class PrintViewModelTests
 
         _printJobQueueMock
             .Setup(x => x.GetPendingJobsAsync())
-            .ReturnsAsync(Result.Ok(new List<PrintJob>()));
+            .Returns(Task.FromResult(Result.Ok((IEnumerable<PrintJob>)new List<PrintJob>())));
 
         // Act
-        await _viewModel.PrintReceiptCommand.Execute(null);
+        _viewModel.PrintReceiptCommand.Execute(null);
 
         // Assert
         _thermalPrinterServiceMock.Verify(x => x.PrintReceiptAsync(sale), Times.Once);
@@ -170,7 +170,7 @@ public class PrintViewModelTests
 
         _printJobQueueMock
             .Setup(x => x.GetPendingJobsAsync())
-            .ReturnsAsync(Result.Ok(new List<PrintJob>()));
+            .Returns(Task.FromResult(Result.Ok((IEnumerable<PrintJob>)new List<PrintJob>())));
 
         // Act
         _viewModel.PrintInvoiceCommand.Execute(null);
@@ -194,7 +194,7 @@ public class PrintViewModelTests
 
         _printJobQueueMock
             .Setup(x => x.GetPendingJobsAsync())
-            .ReturnsAsync(Result.Ok(new List<PrintJob>()));
+            .Returns(Task.FromResult(Result.Ok((IEnumerable<PrintJob>)new List<PrintJob>())));
 
         // Act
         _viewModel.TestPrintCommand.Execute(null);
@@ -216,7 +216,7 @@ public class PrintViewModelTests
 
         _printJobQueueMock
             .Setup(x => x.GetPendingJobsAsync())
-            .ReturnsAsync(Result.Ok(new List<PrintJob>()));
+            .Returns(Task.FromResult(Result.Ok(new List<PrintJob>())));
 
         // Act
         _viewModel.CancelPrintJobCommand.Execute(job);

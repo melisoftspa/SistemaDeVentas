@@ -236,9 +236,9 @@ public class PrintJobQueue : IPrintJobQueue
     {
         if (_jobs.TryGetValue(jobId, out var job))
         {
-            job.IncrementRetry();
             if (job.CanRetry())
             {
+                job.IncrementRetry();
                 job.UpdateStatus(PrintJobStatus.Pending, errorMessage);
                 _queue.Enqueue(job, (job.Priority, job.CreatedAt));
                 UpdateStatusCount(PrintJobStatus.Processing, -1);

@@ -37,7 +37,7 @@ public class SaleService : ISaleService
         return await _saleRepository.GetByIdAsync(id);
     }
 
-    public async Task<IEnumerable<Sale>> GetSalesByUserAsync(Guid userId)
+    public async Task<IEnumerable<Sale>> GetSalesByUserAsync(int userId)
     {
         return await _saleRepository.GetByUserAsync(userId);
     }

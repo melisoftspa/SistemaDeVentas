@@ -21,7 +21,7 @@ public interface ICafRepository
     /// </summary>
     /// <param name="id">ID del CAF.</param>
     /// <returns>CAF encontrado o null.</returns>
-    Task<Caf?> ObtenerPorIdAsync(int id);
+    Task<Caf?> ObtenerPorIdAsync(Guid id);
 
     /// <summary>
     /// Obtiene todos los CAF activos para un emisor.
@@ -35,20 +35,20 @@ public interface ICafRepository
     /// </summary>
     /// <param name="caf">CAF a guardar.</param>
     /// <returns>ID del CAF guardado.</returns>
-    Task<int> GuardarAsync(Caf caf);
+    Task<Guid> GuardarAsync(Caf caf);
 
     /// <summary>
     /// Actualiza el folio actual de un CAF.
     /// </summary>
     /// <param name="id">ID del CAF.</param>
     /// <param name="folioActual">Nuevo folio actual.</param>
-    Task ActualizarFolioActualAsync(int id, int folioActual);
+    Task ActualizarFolioActualAsync(Guid id, int folioActual);
 
     /// <summary>
     /// Desactiva un CAF.
     /// </summary>
     /// <param name="id">ID del CAF.</param>
-    Task DesactivarAsync(int id);
+    Task DesactivarAsync(Guid id);
 
     /// <summary>
     /// Verifica si existe un CAF para el tipo de documento y ambiente.

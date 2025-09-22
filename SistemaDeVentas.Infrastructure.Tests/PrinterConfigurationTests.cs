@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Moq;
 using SistemaDeVentas.Core.Domain.Entities.Printer;
 using SistemaDeVentas.Core.Domain.Enums;
 using SistemaDeVentas.Infrastructure.Services.Printer;
@@ -10,13 +9,31 @@ namespace SistemaDeVentas.Infrastructure.Tests;
 
 public class PrinterConfigurationTests
 {
-    private readonly Mock<IConfiguration> _configurationMock;
+    private readonly IConfiguration _configuration;
     private readonly PrinterConfiguration _service;
 
     public PrinterConfigurationTests()
     {
-        _configurationMock = new Mock<IConfiguration>();
-        _service = new PrinterConfiguration(_configurationMock.Object);
+        var configBuilder = new ConfigurationBuilder();
+        configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["ThermalPrinters:TestPrinter:Model"] = "RPT008",
+            ["ThermalPrinters:TestPrinter:ConnectionType"] = "USB",
+            ["ThermalPrinters:TestPrinter:Port"] = "COM1",
+            ["ThermalPrinters:TestPrinter:BaudRate"] = "9600",
+            ["ThermalPrinters:TestPrinter:TimeoutMilliseconds"] = "5000",
+            ["ThermalPrinters:TestPrinter:PaperWidth"] = "32",
+            ["ThermalPrinters:TestPrinter:Name"] = "Test Printer",
+            ["ThermalPrinters:InvalidPrinter:Model"] = "InvalidModel",
+            ["ThermalPrinters:Printer1:Model"] = "RPT008",
+            ["ThermalPrinters:Printer1:ConnectionType"] = "USB",
+            ["ThermalPrinters:Printer1:Name"] = "Printer 1",
+            ["ThermalPrinters:Printer2:Model"] = "Generic",
+            ["ThermalPrinters:Printer2:ConnectionType"] = "USB",
+            ["ThermalPrinters:Printer2:Name"] = "Printer 2"
+        });
+        _configuration = configBuilder.Build();
+        _service = new PrinterConfiguration(_configuration);
     }
 
     [Fact]
@@ -24,49 +41,6 @@ public class PrinterConfigurationTests
     {
         // Arrange
         var printerId = "TestPrinter";
-        var mockSection = new Mock<IConfigurationSection>();
-        var settingsSection = new Mock<IConfigurationSection>();
-
-        // Setup section hierarchy
-        _configurationMock
-            .Setup(x => x.GetSection("ThermalPrinters"))
-            .Returns(mockSection.Object);
-
-        mockSection
-            .Setup(x => x.GetSection(printerId))
-            .Returns(settingsSection.Object);
-
-        settingsSection
-            .Setup(x => x.Exists())
-            .Returns(true);
-
-        settingsSection
-            .Setup(x => x["Model"])
-            .Returns("RPT008");
-
-        settingsSection
-            .Setup(x => x["ConnectionType"])
-            .Returns("USB");
-
-        settingsSection
-            .Setup(x => x["Port"])
-            .Returns("COM1");
-
-        settingsSection
-            .Setup(x => x["BaudRate"])
-            .Returns("9600");
-
-        settingsSection
-            .Setup(x => x["TimeoutMilliseconds"])
-            .Returns("5000");
-
-        settingsSection
-            .Setup(x => x["PaperWidth"])
-            .Returns("32");
-
-        settingsSection
-            .Setup(x => x["Name"])
-            .Returns("Test Printer");
 
         // Act
         var result = await _service.GetConfigurationAsync(printerId);
@@ -89,20 +63,6 @@ public class PrinterConfigurationTests
     {
         // Arrange
         var printerId = "NonExistentPrinter";
-        var mockSection = new Mock<IConfigurationSection>();
-        var settingsSection = new Mock<IConfigurationSection>();
-
-        _configurationMock
-            .Setup(x => x.GetSection("ThermalPrinters"))
-            .Returns(mockSection.Object);
-
-        mockSection
-            .Setup(x => x.GetSection(printerId))
-            .Returns(settingsSection.Object);
-
-        settingsSection
-            .Setup(x => x.Exists())
-            .Returns(false);
 
         // Act
         var result = await _service.GetConfigurationAsync(printerId);
@@ -116,25 +76,7 @@ public class PrinterConfigurationTests
     public async Task GetConfigurationAsync_WithInvalidModel_ShouldFail()
     {
         // Arrange
-        var printerId = "TestPrinter";
-        var mockSection = new Mock<IConfigurationSection>();
-        var settingsSection = new Mock<IConfigurationSection>();
-
-        _configurationMock
-            .Setup(x => x.GetSection("ThermalPrinters"))
-            .Returns(mockSection.Object);
-
-        mockSection
-            .Setup(x => x.GetSection(printerId))
-            .Returns(settingsSection.Object);
-
-        settingsSection
-            .Setup(x => x.Exists())
-            .Returns(true);
-
-        settingsSection
-            .Setup(x => x["Model"])
-            .Returns("InvalidModel");
+        var printerId = "InvalidPrinter";
 
         // Act
         var result = await _service.GetConfigurationAsync(printerId);
@@ -201,34 +143,6 @@ public class PrinterConfigurationTests
     [Fact]
     public async Task GetAllConfigurationsAsync_ShouldReturnAllConfigs()
     {
-        // Arrange
-        var mockThermalPrintersSection = new Mock<IConfigurationSection>();
-        var mockPrinter1Section = new Mock<IConfigurationSection>();
-        var mockPrinter2Section = new Mock<IConfigurationSection>();
-
-        _configurationMock
-            .Setup(x => x.GetSection("ThermalPrinters"))
-            .Returns(mockThermalPrintersSection.Object);
-
-        var children = new List<IConfigurationSection> { mockPrinter1Section.Object, mockPrinter2Section.Object };
-        mockThermalPrintersSection
-            .Setup(x => x.GetChildren())
-            .Returns(children);
-
-        // Setup first printer
-        mockPrinter1Section.Setup(x => x.Key).Returns("Printer1");
-        mockPrinter1Section.Setup(x => x.Exists()).Returns(true);
-        mockPrinter1Section.Setup(x => x["Model"]).Returns("RPT008");
-        mockPrinter1Section.Setup(x => x["ConnectionType"]).Returns("USB");
-        mockPrinter1Section.Setup(x => x["Name"]).Returns("Printer 1");
-
-        // Setup second printer
-        mockPrinter2Section.Setup(x => x.Key).Returns("Printer2");
-        mockPrinter2Section.Setup(x => x.Exists()).Returns(true);
-        mockPrinter2Section.Setup(x => x["Model"]).Returns("Generic");
-        mockPrinter2Section.Setup(x => x["ConnectionType"]).Returns("USB");
-        mockPrinter2Section.Setup(x => x["Name"]).Returns("Printer 2");
-
         // Act
         var result = await _service.GetAllConfigurationsAsync();
 

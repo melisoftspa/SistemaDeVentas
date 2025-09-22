@@ -8,6 +8,6 @@ public interface IAuthService
     bool Login(string username, string password);
     Task<User?> GetUserByUsernameAsync(string username);
     Task<User?> GetUserByEmailAsync(string email);
-    Task<bool> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword);
+    Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
     Task<bool> ValidateUserAsync(User user);
 }

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using FluentResults;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SistemaDeVentas.Core.Application.Interfaces;
@@ -16,6 +17,7 @@ public class ThermalPrinterServiceTests
     private readonly Mock<IPrinterConfiguration> _printerConfigurationMock;
     private readonly Mock<IPrintJobQueue> _printJobQueueMock;
     private readonly Mock<ILogger<ThermalPrinterService>> _loggerMock;
+    private readonly Mock<IThermalPrinterService> _thermalPrinterMock;
     private readonly ThermalPrinterService _service;
 
     public ThermalPrinterServiceTests()
@@ -23,7 +25,7 @@ public class ThermalPrinterServiceTests
         _printerConfigurationMock = new Mock<IPrinterConfiguration>();
         _printJobQueueMock = new Mock<IPrintJobQueue>();
         _loggerMock = new Mock<ILogger<ThermalPrinterService>>();
-        _thermalPrinterMock = new Mock<IThermalPrinter>();
+        _thermalPrinterMock = new Mock<IThermalPrinterService>();
 
         _service = new ThermalPrinterService(
             _printerConfigurationMock.Object,
@@ -51,7 +53,7 @@ public class ThermalPrinterServiceTests
             .ReturnsAsync(Result.Ok(config));
 
         _thermalPrinterMock
-            .Setup(x => x.ConnectAsync())
+            .Setup(x => x.ConnectAsync(It.IsAny<string>()))
             .ReturnsAsync(Result.Ok(true));
 
         // Act
@@ -200,7 +202,7 @@ public class ThermalPrinterServiceTests
         _printerConfigurationMock
             .Setup(x => x.GetConfigurationAsync("TestPrinter"))
             .ReturnsAsync(Result.Ok(config));
-        _thermalPrinterMock.Setup(x => x.ConnectAsync()).ReturnsAsync(Result.Ok(true));
+        _thermalPrinterMock.Setup(x => x.ConnectAsync(It.IsAny<string>())).ReturnsAsync(Result.Ok(true));
 
         await _service.ConnectAsync("TestPrinter");
 
@@ -240,7 +242,7 @@ public class ThermalPrinterServiceTests
         _printerConfigurationMock
             .Setup(x => x.GetConfigurationAsync("TestPrinter"))
             .ReturnsAsync(Result.Ok(config));
-        _thermalPrinterMock.Setup(x => x.ConnectAsync()).ReturnsAsync(Result.Ok(true));
+        _thermalPrinterMock.Setup(x => x.ConnectAsync(It.IsAny<string>())).ReturnsAsync(Result.Ok(true));
 
         await _service.ConnectAsync("TestPrinter");
 

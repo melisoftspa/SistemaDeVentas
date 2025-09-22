@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using SistemaDeVentas.Core.Domain.Entities.DTE;
 
 namespace SistemaDeVentas.Core.Domain.Entities;
 
@@ -23,7 +25,7 @@ public class Sale
     [Range(0.01, double.MaxValue, ErrorMessage = "El total debe ser mayor a 0")]
     public double Total { get; set; }
 
-    public Guid? IdUser { get; set; }
+    public int? IdUser { get; set; }
 
     [StringLength(1000, ErrorMessage = "La nota no puede exceder 1000 caracteres")]
     public string? Note { get; set; }
@@ -42,14 +44,20 @@ public class Sale
     public bool State { get; set; } = true;
 
     public bool DteGenerated { get; set; } = false;
+
     public int? Folio { get; set; }
+
     public string? DteXml { get; set; }
 
     // Campos DTE opcionales
     public int? DteFolio { get; set; }
+
     public string? DteStatus { get; set; }
+
     public string? DteType { get; set; }
+
     public Guid? CafId { get; set; }
+
     public DateTime? DteSentDate { get; set; }
 
     // Campos de pago
@@ -64,6 +72,8 @@ public class Sale
     // Navigation properties
     public User? User { get; set; }
     public List<Detail> Details { get; set; } = new List<Detail>();
+    public Caf? Caf { get; set; }
+    public List<DteLog> DteLogs { get; set; } = new List<DteLog>();
 
     // Computed properties
     public double Subtotal => Details.Sum(d => d.Total);
@@ -71,23 +81,11 @@ public class Sale
     public int TotalItems => ((int)Details.Sum(d => d.Amount));
     public string StatusText => State ? "Completada" : "Cancelada";
     public string PaymentMethodText => GetPaymentMethodText();
-    public bool HasDiscount => Details.Any(d => d.Discount > 0);
-    public double TotalDiscount => Details.Sum(d => d.Discount);
+    public bool HasDiscount => false; // Discount removed
+    public double TotalDiscount => 0; // Discount removed
 
     private string GetPaymentMethodText()
     {
-        if (!string.IsNullOrEmpty(PaymentMethod))
-        {
-            return PaymentMethod switch
-            {
-                "mercadopago" => "MercadoPago",
-                "efectivo" => "Efectivo",
-                "tarjeta" => "Tarjeta",
-                "transferencia" => "Transferencia",
-                _ => PaymentMethod
-            };
-        }
-
         if (PaymentCash > 0 && PaymentOther > 0)
             return "Mixto";
         else if (PaymentCash > 0)

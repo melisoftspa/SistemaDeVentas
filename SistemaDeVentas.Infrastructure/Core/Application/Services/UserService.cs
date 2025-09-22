@@ -1,8 +1,6 @@
 using SistemaDeVentas.Core.Application.Interfaces;
 using SistemaDeVentas.Core.Domain.Entities;
 using SistemaDeVentas.Core.Domain.Interfaces;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SistemaDeVentas.Infrastructure.Core.Application.Services;
 
@@ -20,7 +18,7 @@ public class UserService : IUserService, IAuthService
         return await _userRepository.GetAllAsync();
     }
 
-    public async Task<User?> GetUserByIdAsync(Guid id)
+    public async Task<User?> GetUserByIdAsync(int id)
     {
         return await _userRepository.GetByIdAsync(id);
     }
@@ -32,19 +30,7 @@ public class UserService : IUserService, IAuthService
 
     public async Task<User?> AuthenticateAsync(string username, string password)
     {
-        var user = await _userRepository.GetByUsernameAsync(username);
-        if (user == null || !user.IsActive)
-        {
-            return null;
-        }
-
-        var hashedPassword = HashPassword(password);
-        if (user.Password != hashedPassword)
-        {
-            return null;
-        }
-
-        return user;
+        return await _userRepository.AuthenticateWithPwdCompareAsync(username, password);
     }
 
     public async Task<User> CreateUserAsync(User user)
@@ -56,8 +42,7 @@ public class UserService : IUserService, IAuthService
         }
 
         // Hash de la contraseña
-        user.Password = HashPassword(user.Password);
-        user.CreatedAt = DateTime.UtcNow;
+        user.Password = await _userRepository.HashPasswordAsync(user.Password);
         user.IsActive = true;
 
         return await _userRepository.CreateAsync(user);
@@ -69,7 +54,7 @@ public class UserService : IUserService, IAuthService
         return await _userRepository.UpdateAsync(user);
     }
 
-    public async Task<bool> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword)
+    public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
     {
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
@@ -77,13 +62,14 @@ public class UserService : IUserService, IAuthService
             return false;
         }
 
-        var hashedCurrentPassword = HashPassword(currentPassword);
-        if (user.Password != hashedCurrentPassword)
+        // Verificar contraseña actual usando autenticación
+        var authenticatedUser = await AuthenticateAsync(user.Username, currentPassword);
+        if (authenticatedUser == null || authenticatedUser.Id != userId)
         {
             return false;
         }
 
-        user.Password = HashPassword(newPassword);
+        user.Password = await _userRepository.HashPasswordAsync(newPassword);
         await _userRepository.UpdateAsync(user);
         return true;
     }
@@ -96,12 +82,12 @@ public class UserService : IUserService, IAuthService
             return false;
         }
 
-        user.Password = HashPassword(newPassword);
+        user.Password = await _userRepository.HashPasswordAsync(newPassword);
         await _userRepository.UpdateAsync(user);
         return true;
     }
 
-    public async Task<bool> DeactivateUserAsync(Guid userId)
+    public async Task<bool> DeactivateUserAsync(int userId)
     {
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
@@ -114,7 +100,7 @@ public class UserService : IUserService, IAuthService
         return true;
     }
 
-    public async Task<bool> ActivateUserAsync(Guid userId)
+    public async Task<bool> ActivateUserAsync(int userId)
     {
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
@@ -147,12 +133,12 @@ public class UserService : IUserService, IAuthService
         return await _userRepository.SearchAsync(searchTerm);
     }
 
-    public async Task<bool> DeleteUserAsync(Guid id)
+    public async Task<bool> DeleteUserAsync(int id)
     {
         return await _userRepository.DeleteAsync(id);
     }
 
-    public async Task<bool> ExistsAsync(Guid id)
+    public async Task<bool> ExistsAsync(int id)
     {
         return await _userRepository.ExistsAsync(id);
     }
@@ -202,12 +188,4 @@ public class UserService : IUserService, IAuthService
         return Task.FromResult(user != null && user.IsActive);
     }
 
-    private string HashPassword(string password)
-    {
-        using (var sha256 = SHA256.Create())
-        {
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
-        }
-    }
 }

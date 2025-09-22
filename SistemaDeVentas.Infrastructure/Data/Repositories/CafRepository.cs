@@ -32,7 +32,7 @@ public class CafRepository : ICafRepository
     }
 
     /// <inheritdoc/>
-    public async Task<Caf?> ObtenerPorIdAsync(int id)
+    public async Task<Caf?> ObtenerPorIdAsync(Guid id)
     {
         return await _context.Cafs.FindAsync(id);
     }
@@ -47,9 +47,9 @@ public class CafRepository : ICafRepository
     }
 
     /// <inheritdoc/>
-    public async Task<int> GuardarAsync(Caf caf)
+    public async Task<Guid> GuardarAsync(Caf caf)
     {
-        if (caf.Id == 0)
+        if (caf.Id == Guid.Empty)
         {
             _context.Cafs.Add(caf);
         }
@@ -63,7 +63,7 @@ public class CafRepository : ICafRepository
     }
 
     /// <inheritdoc/>
-    public async Task ActualizarFolioActualAsync(int id, int folioActual)
+    public async Task ActualizarFolioActualAsync(Guid id, int folioActual)
     {
         var caf = await _context.Cafs.FindAsync(id);
         if (caf != null)
@@ -74,7 +74,7 @@ public class CafRepository : ICafRepository
     }
 
     /// <inheritdoc/>
-    public async Task DesactivarAsync(int id)
+    public async Task DesactivarAsync(Guid id)
     {
         var caf = await _context.Cafs.FindAsync(id);
         if (caf != null)

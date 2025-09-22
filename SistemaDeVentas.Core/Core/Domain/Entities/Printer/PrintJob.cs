@@ -69,7 +69,7 @@ public class PrintJob
         Status = newStatus;
         UpdatedAt = DateTime.UtcNow;
 
-        if (newStatus == PrintJobStatus.Failed && !string.IsNullOrWhiteSpace(errorMessage))
+        if (!string.IsNullOrWhiteSpace(errorMessage))
         {
             ErrorMessage = errorMessage;
         }
@@ -88,5 +88,5 @@ public class PrintJob
     /// Verifica si el trabajo puede ser reintentado.
     /// </summary>
     /// <returns>True si puede ser reintentado.</returns>
-    public bool CanRetry() => RetryCount < 5 && Status == PrintJobStatus.Failed;
+    public bool CanRetry() => RetryCount < 5;
 }

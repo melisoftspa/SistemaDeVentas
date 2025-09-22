@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.Core.Domain.Entities;
@@ -21,6 +22,7 @@ public class Detail : IDetail
     [Range(0.01, double.MaxValue, ErrorMessage = "La cantidad debe ser mayor a 0")]
     public double Amount { get; set; }
 
+    [NotMapped]
     [Range(0.01, double.MaxValue, ErrorMessage = "La cantidad debe ser mayor a 0")]
     public double Quantity { get; set; }
 
@@ -36,6 +38,7 @@ public class Detail : IDetail
     [Range(0, double.MaxValue, ErrorMessage = "El total del impuesto debe ser mayor o igual a 0")]
     public double TotalTax { get; set; }
     
+    [NotMapped]
     [Range(0, double.MaxValue, ErrorMessage = "El descuento debe ser mayor o igual a 0")]
     public double Discount { get; set; }
     

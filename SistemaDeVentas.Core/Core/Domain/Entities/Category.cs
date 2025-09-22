@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using SistemaDeVentas.Core.Domain.Interfaces;
 
 namespace SistemaDeVentas.Core.Domain.Entities;
@@ -8,25 +9,29 @@ public partial class Category : ICategory
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
+    public int? Value { get; set; }
+
+    public string? Text { get; set; }
+
+    public bool State { get; set; } = true;
+
+    [NotMapped]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    [NotMapped]
     public DateTime? UpdatedAt { get; set; }
 
-    public string Name { get; set; } = string.Empty;
-
-    public bool IsActive { get; set; } = true;
-
     // Interface implementation
-    public string Text
+    public string Name
     {
-        get => Name;
-        set => Name = value;
+        get => Text ?? string.Empty;
+        set => Text = value;
     }
 
-    public bool State
+    public bool IsActive
     {
-        get => IsActive;
-        set => IsActive = value;
+        get => State;
+        set => State = value;
     }
 
     // Navigation properties

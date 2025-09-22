@@ -228,46 +228,54 @@ public class PrintJobQueueTests
     }
 
     [Fact]
-    public void MarkCompleted_ShouldUpdateStatusAndMetrics()
+    public async Task MarkCompleted_ShouldUpdateStatusAndMetrics()
     {
         // Arrange
         var data = new byte[] { 0x1B, 0x40 };
-        var job = new PrintJob { Id = Guid.NewGuid(), Data = data, Status = PrintJobStatus.Processing };
+        var enqueueResult = await _queue.EnqueueAsync(data, PrintJobPriority.Normal);
+        var jobId = enqueueResult.Value;
+        var job = await _queue.DequeueAsync();
         var processingTime = TimeSpan.FromSeconds(2.5);
 
         // Act
-        _queue.MarkCompleted(job.Id, processingTime);
+        _queue.MarkCompleted(jobId, processingTime);
 
         // Assert
-        job.Status.Should().Be(PrintJobStatus.Completed);
+        job!.Status.Should().Be(PrintJobStatus.Completed);
         job.UpdatedAt.Should().NotBeNull();
     }
 
     [Fact]
-    public void MarkFailed_ShouldRetryIfPossible()
+    public async Task MarkFailed_ShouldRetryIfPossible()
     {
         // Arrange
         var data = new byte[] { 0x1B, 0x40 };
-        var job = new PrintJob { Id = Guid.NewGuid(), Data = data, Status = PrintJobStatus.Processing, RetryCount = 0 };
+        var enqueueResult = await _queue.EnqueueAsync(data, PrintJobPriority.Normal);
+        var jobId = enqueueResult.Value;
+        var job = await _queue.DequeueAsync();
 
         // Act
-        _queue.MarkFailed(job.Id, "Connection error");
+        _queue.MarkFailed(jobId, "Connection error");
 
         // Assert
-        job.Status.Should().Be(PrintJobStatus.Pending); // Should be re-queued
+        job!.Status.Should().Be(PrintJobStatus.Pending); // Should be re-queued
         job.RetryCount.Should().Be(1);
         job.ErrorMessage.Should().Be("Connection error");
     }
 
     [Fact]
-    public void MarkFailed_ShouldFailPermanentlyAfterMaxRetries()
+    public async Task MarkFailed_ShouldFailPermanentlyAfterMaxRetries()
     {
         // Arrange
         var data = new byte[] { 0x1B, 0x40 };
-        var job = new PrintJob { Id = Guid.NewGuid(), Data = data, Status = PrintJobStatus.Processing, RetryCount = 5 };
+        var enqueueResult = await _queue.EnqueueAsync(data, PrintJobPriority.Normal);
+        var jobId = enqueueResult.Value;
+        var job = await _queue.DequeueAsync();
+        // Set retry count to max
+        job!.RetryCount = 5;
 
         // Act
-        _queue.MarkFailed(job.Id, "Persistent error");
+        _queue.MarkFailed(jobId, "Persistent error");
 
         // Assert
         job.Status.Should().Be(PrintJobStatus.Failed);

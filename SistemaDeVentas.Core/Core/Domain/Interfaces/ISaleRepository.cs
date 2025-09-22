@@ -6,7 +6,7 @@ public interface ISaleRepository
 {
     Task<IEnumerable<Sale>> GetAllAsync();
     Task<Sale?> GetByIdAsync(Guid id);
-    Task<IEnumerable<Sale>> GetByUserAsync(Guid userId);
+    Task<IEnumerable<Sale>> GetByUserAsync(int userId);
     Task<IEnumerable<Sale>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
     Task<IEnumerable<Sale>> GetByStateAsync(bool state);
     Task<Sale> CreateAsync(Sale sale);

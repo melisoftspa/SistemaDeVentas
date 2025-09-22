@@ -14,7 +14,7 @@ namespace SistemaDeVentas.WinUI.Models
             return new Product
             {
                 Id = coreProduct.Id,
-                Date = coreProduct.CreatedAt,
+                Date = (DateTime)coreProduct.CreatedAt,
                 State = coreProduct.IsActive,
                 Name = coreProduct.Name,
                 Amount = coreProduct.Amount,

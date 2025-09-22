@@ -15,9 +15,9 @@
                         SelectionChanged="NavView_SelectionChanged">
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Inicio" Icon="Home" Tag="home"/>
-                <NavigationViewItem Content="Ventas" Icon="Money" Tag="sales"/>
+                <NavigationViewItem Content="Ventas" Icon="Shop" Tag="sales"/>
                 <NavigationViewItem Content="Inventario" Icon="Edit" Tag="inventory"/>
-                <NavigationViewItem Content="Reportes" Icon="DataBarVertical" Tag="reports"/>
+                <NavigationViewItem Content="Reportes" Icon="Document" Tag="reports"/>
             </NavigationView.MenuItems>
 
             <NavigationView.Header>

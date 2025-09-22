@@ -30,7 +30,7 @@ public class SaleRepository : ISaleRepository
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
-    public async Task<IEnumerable<Sale>> GetByUserAsync(Guid userId)
+    public async Task<IEnumerable<Sale>> GetByUserAsync(int userId)
     {
         return await _context.Sales
             .Include(s => s.User)
